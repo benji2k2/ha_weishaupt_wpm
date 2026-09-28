@@ -1,0 +1,12 @@
+{
+  "domain": "weishaupt_wpm",
+  "name": "Weishaupt WPM",
+  "codeowners": ["@benji2k2"],
+  "config_flow": true,
+  "documentation": "https://github.com/benji2k2/ha_weishaupt_wpm",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/benji2k2/ha_weishaupt_wpm/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

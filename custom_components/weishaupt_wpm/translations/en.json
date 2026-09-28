@@ -1,0 +1,363 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Weishaupt WPM",
+        "description": "Connection to the heat pump manager through an RS485 to Ethernet gateway. Modbus RTU must be enabled at the WPM (network menu). The gateway serves one program at a time: close tools/probe.py and similar programs first.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit": "Modbus address",
+          "transport": "Transport"
+        },
+        "data_description": {
+          "host": "IP address of the RS485 to Ethernet gateway.",
+          "port": "TCP port set in the gateway, usually 502.",
+          "unit": "Address set at the WPM (network menu), usually 1.",
+          "transport": "Transparent gateway (e.g. Waveshare RS485 TO ETH without B): Modbus RTU over TCP. Real Modbus TCP gateway: Modbus TCP."
+        }
+      },
+      "reconfigure": {
+        "title": "Change connection",
+        "description": "Change the gateway address or the Modbus settings.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit": "Modbus address",
+          "transport": "Transport"
+        },
+        "data_description": {
+          "host": "IP address of the RS485 to Ethernet gateway.",
+          "port": "TCP port set in the gateway, usually 502.",
+          "unit": "Address set at the WPM (network menu), usually 1.",
+          "transport": "Transparent gateway (e.g. Waveshare RS485 TO ETH without B): Modbus RTU over TCP. Real Modbus TCP gateway: Modbus TCP."
+        }
+      }
+    },
+    "error": {
+      "gateway_unreachable": "The gateway cannot be reached. Check its IP address and port, and that no other program is connected to it.",
+      "no_answer": "The gateway is reachable, but the heat pump does not answer. Check the serial settings in the gateway (9600 8N1), the Modbus address, that Modbus is enabled at the WPM, and try swapping A and B.",
+      "invalid_response": "The heat pump answered, but not as expected. Check the transport setting.",
+      "unknown": "Unexpected error, see the log."
+    },
+    "abort": {
+      "already_configured": "This heat pump is already set up.",
+      "reconfigure_successful": "The connection was updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling",
+        "data": {
+          "status_interval": "Temperatures and status",
+          "settings_interval": "Settings",
+          "counter_interval": "Runtimes and heat amounts",
+          "address_offset": "Address offset"
+        },
+        "data_description": {
+          "status_interval": "How often temperatures and status are read.",
+          "settings_interval": "How often the operating mode and hot water settings are read.",
+          "counter_interval": "How often runtimes and heat amounts are read.",
+          "address_offset": "0 unless tools/probe.py showed that the outdoor temperature sits one register lower."
+        }
+      }
+    }
+  },
+  "selector": {
+    "transport": {
+      "options": {
+        "rtuovertcp": "Modbus RTU over TCP (transparent gateway)",
+        "tcp": "Modbus TCP (Modbus TCP gateway)"
+      }
+    },
+    "address_offset": {
+      "options": {
+        "0": "0 (as documented)",
+        "-1": "-1 (all registers one lower)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "environmental_energy": {
+        "name": "Environmental energy"
+      },
+      "fault": {
+        "name": "Fault",
+        "state": {
+          "none": "No fault",
+          "n17_1": "Error N17.1",
+          "n17_2": "Error N17.2",
+          "n17_3": "Error N17.3",
+          "n17_4": "Error N17.4",
+          "electronic_expansion_valve": "Electronic expansion valve",
+          "wpio": "WPIO",
+          "inverter": "Inverter",
+          "wqif": "WQIF",
+          "sensor_fault": "Sensor fault",
+          "brine_low_pressure": "Brine low pressure",
+          "primary_circuit_alarm": "Primary circuit (!)",
+          "defrost_alarm": "Defrost (!)",
+          "brine_low_pressure_alarm": "Brine low pressure (!)",
+          "hot_water_alarm": "Hot water (!)",
+          "compressor_load_alarm": "Compressor load (!)",
+          "coding_alarm": "Coding (!)",
+          "low_pressure_alarm": "Low pressure (!)",
+          "frost_protection_alarm": "Frost protection (!)",
+          "high_pressure_alarm": "High pressure (!)",
+          "temperature_difference_alarm": "Temperature difference (!)",
+          "hot_gas_thermostat_alarm": "Hot gas thermostat (!)",
+          "flow_alarm": "Flow (!)",
+          "warm_up_alarm": "Warm-up (!)",
+          "other": "Unknown code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "flow_temperature": {
+        "name": "Flow temperature"
+      },
+      "heat_heating": {
+        "name": "Heat for heating"
+      },
+      "heat_hot_water": {
+        "name": "Heat for hot water"
+      },
+      "heat_source_inlet_temperature": {
+        "name": "Heat source inlet"
+      },
+      "heat_source_outlet_temperature": {
+        "name": "Heat source outlet"
+      },
+      "hot_water_setpoint_active": {
+        "name": "Active hot water setpoint"
+      },
+      "hot_water_setpoint_max": {
+        "name": "Hot water setpoint maximum"
+      },
+      "hot_water_setpoint_min": {
+        "name": "Hot water setpoint minimum"
+      },
+      "hot_water_temperature": {
+        "name": "Hot water temperature"
+      },
+      "lock": {
+        "name": "Lock",
+        "state": {
+          "none": "None",
+          "volume_flow": "Volume flow",
+          "function_check": "Function check",
+          "operating_limit_high_temperature": "Operating limit high temperature",
+          "system_check": "System check",
+          "cooling_changeover_delay": "Cooling changeover delay",
+          "pump_prerun": "Pump pre-run",
+          "minimum_standstill": "Minimum standstill time",
+          "grid_load": "Grid load",
+          "switching_cycle_lock": "Switching cycle lock",
+          "hot_water_reheating": "Hot water reheating",
+          "renewable": "Renewable",
+          "utility_lock": "Utility lock",
+          "soft_starter": "Soft starter",
+          "flow": "Flow",
+          "heat_pump_operating_limit": "Heat pump operating limit",
+          "high_pressure": "High pressure",
+          "low_pressure": "Low pressure",
+          "heat_source_operating_limit": "Heat source operating limit",
+          "system_limit": "System limit",
+          "primary_circuit_load": "Primary circuit load",
+          "external_lock": "External lock",
+          "inverter": "Inverter",
+          "warm_up": "Warm-up",
+          "eev_initialisation": "Expansion valve initialisation",
+          "second_heat_generator_released": "Second heat generator released",
+          "fault": "Fault",
+          "other": "Unknown code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "operating_mode": {
+        "name": "Active operating mode",
+        "state": {
+          "summer": "Summer",
+          "winter": "Winter",
+          "holiday": "Holiday",
+          "party": "Party",
+          "second_heat_generator": "Second heat generator",
+          "cooling": "Cooling",
+          "other": "Unknown code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "outdoor_temperature": {
+        "name": "Outdoor temperature"
+      },
+      "return_setpoint": {
+        "name": "Return setpoint"
+      },
+      "return_temperature": {
+        "name": "Return temperature"
+      },
+      "runtime_aux_pump": {
+        "name": "Runtime auxiliary circulation pump"
+      },
+      "runtime_compressor_1": {
+        "name": "Runtime compressor 1"
+      },
+      "runtime_compressor_2": {
+        "name": "Runtime compressor 2"
+      },
+      "runtime_flange_heater": {
+        "name": "Runtime flange heater"
+      },
+      "runtime_heating_pump": {
+        "name": "Runtime heating pump"
+      },
+      "runtime_hot_water_pump": {
+        "name": "Runtime hot water pump"
+      },
+      "runtime_pool_pump": {
+        "name": "Runtime pool pump"
+      },
+      "runtime_primary_pump": {
+        "name": "Runtime primary pump / fan"
+      },
+      "runtime_second_heat_generator": {
+        "name": "Runtime second heat generator"
+      },
+      "sensor_fault": {
+        "name": "Sensor fault",
+        "state": {
+          "none": "No error",
+          "outdoor_r1": "Outdoor sensor (R1)",
+          "return_r2": "Return sensor (R2)",
+          "hot_water_r3": "Hot water sensor (R3)",
+          "coding_r7": "Coding (R7)",
+          "flow_r9": "Flow sensor (R9)",
+          "heating_circuit_2_r5": "Heating circuit 2 sensor (R5)",
+          "heating_circuit_3_r13": "Heating circuit 3 sensor (R13)",
+          "renewable_r13": "Renewable sensor (R13)",
+          "room_1": "Room sensor 1",
+          "room_2": "Room sensor 2",
+          "heat_source_outlet_r6": "Heat source outlet sensor (R6)",
+          "heat_source_inlet_r24": "Heat source inlet sensor (R24)",
+          "collector_r23": "Collector sensor (R23)",
+          "low_pressure_r25": "Low pressure sensor (R25)",
+          "high_pressure_r26": "High pressure sensor (R26)",
+          "room_humidity_1": "Room humidity 1",
+          "room_humidity_2": "Room humidity 2",
+          "frost_protection_cooling": "Frost protection sensor (cooling)",
+          "hot_gas": "Hot gas",
+          "return_r2_1": "Return sensor (R2.1)",
+          "pool_r20": "Pool sensor (R20)",
+          "flow_passive_cooling_r11": "Passive cooling flow sensor (R11)",
+          "return_passive_cooling_r4": "Passive cooling return sensor (R4)",
+          "solar_tank_r22": "Solar tank sensor (R22)",
+          "demand_heating_r2_2": "Heating demand sensor (R2.2)",
+          "rtm_econ": "RTM Econ",
+          "demand_cooling_r39": "Cooling demand sensor (R39)",
+          "oil_temperature_compressor_1": "Compressor 1 oil temperature sensor",
+          "oil_temperature_compressor_2": "Compressor 2 oil temperature sensor",
+          "hot_gas_compressor_1": "Compressor 1 hot gas sensor",
+          "hot_gas_compressor_2": "Compressor 2 hot gas sensor",
+          "evaporator_air_inlet": "Evaporator air inlet sensor",
+          "flow_sensor_secondary": "Secondary circuit flow sensor",
+          "pressure_sensor_secondary": "Secondary circuit pressure sensor",
+          "flow_sensor_primary": "Primary circuit flow sensor",
+          "pressure_sensor_primary": "Primary circuit pressure sensor",
+          "suction_gas": "Suction gas sensor",
+          "other": "Unknown code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "status": {
+        "name": "Status",
+        "state": {
+          "off": "Off",
+          "heating": "Heating",
+          "pool": "Pool",
+          "hot_water": "Hot water",
+          "cooling": "Cooling",
+          "defrost": "Defrost",
+          "flow_monitoring": "Flow monitoring",
+          "mode_change_delay": "Delay after mode change",
+          "locked": "Locked",
+          "other": "Unknown code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      }
+    },
+    "binary_sensor": {
+      "fault_active": {
+        "name": "Fault active"
+      },
+      "lock_active": {
+        "name": "Lock active"
+      }
+    },
+    "number": {
+      "hot_water_setpoint": {
+        "name": "Hot water setpoint"
+      },
+      "hot_water_hysteresis": {
+        "name": "Hot water hysteresis"
+      },
+      "party_hours": {
+        "name": "Party hours"
+      },
+      "holiday_days": {
+        "name": "Holiday days"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Operating mode",
+        "state": {
+          "summer": "Summer",
+          "winter": "Winter",
+          "holiday": "Holiday",
+          "party": "Party"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_writable": {
+      "message": "{key} cannot be changed."
+    },
+    "out_of_range": {
+      "message": "{value} is outside the allowed range {min} to {max}."
+    },
+    "write_too_soon": {
+      "message": "This setting was changed a moment ago. To spare the controller's memory it can be changed again in {seconds} s."
+    },
+    "write_rejected": {
+      "message": "The heat pump rejected the value (Modbus exception {code})."
+    },
+    "write_failed": {
+      "message": "Writing failed: {error}"
+    },
+    "write_not_applied": {
+      "message": "The heat pump did not take the value; it reports {value}."
+    }
+  }
+}

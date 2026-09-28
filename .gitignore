@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Never commit credentials or dumps of a real controller
+.env
+probe*.md
+probe*.txt
+
+# OS
+.DS_Store

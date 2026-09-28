@@ -1,0 +1,363 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Weishaupt WPM",
+        "description": "Verbindung zum Wärmepumpenmanager über ein RS485-Ethernet-Gateway. Am WPM muss Modbus RTU aktiviert sein (Menü Netzwerk). Das Gateway bedient nur ein Programm gleichzeitig: tools/probe.py und Ähnliches vorher beenden.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit": "Modbus-Adresse",
+          "transport": "Übertragung"
+        },
+        "data_description": {
+          "host": "IP-Adresse des RS485-Ethernet-Gateways.",
+          "port": "Im Gateway eingestellter TCP-Port, meist 502.",
+          "unit": "Am WPM eingestellte Adresse (Menü Netzwerk), meist 1.",
+          "transport": "Transparentes Gateway (z. B. Waveshare RS485 TO ETH ohne B): Modbus RTU über TCP. Echtes Modbus-TCP-Gateway: Modbus TCP."
+        }
+      },
+      "reconfigure": {
+        "title": "Verbindung ändern",
+        "description": "Adresse des Gateways oder Modbus-Einstellungen ändern.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit": "Modbus-Adresse",
+          "transport": "Übertragung"
+        },
+        "data_description": {
+          "host": "IP-Adresse des RS485-Ethernet-Gateways.",
+          "port": "Im Gateway eingestellter TCP-Port, meist 502.",
+          "unit": "Am WPM eingestellte Adresse (Menü Netzwerk), meist 1.",
+          "transport": "Transparentes Gateway (z. B. Waveshare RS485 TO ETH ohne B): Modbus RTU über TCP. Echtes Modbus-TCP-Gateway: Modbus TCP."
+        }
+      }
+    },
+    "error": {
+      "gateway_unreachable": "Das Gateway ist nicht erreichbar. IP-Adresse und Port prüfen, und ob schon ein anderes Programm verbunden ist.",
+      "no_answer": "Das Gateway ist erreichbar, aber die Wärmepumpe antwortet nicht. Serielle Einstellungen im Gateway (9600 8N1), Modbus-Adresse und Modbus-Aktivierung am WPM prüfen, ggf. A und B tauschen.",
+      "invalid_response": "Die Wärmepumpe hat geantwortet, aber nicht wie erwartet. Einstellung „Übertragung“ prüfen.",
+      "unknown": "Unerwarteter Fehler, siehe Protokoll."
+    },
+    "abort": {
+      "already_configured": "Diese Wärmepumpe ist bereits eingerichtet.",
+      "reconfigure_successful": "Die Verbindung wurde geändert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Abfrage",
+        "data": {
+          "status_interval": "Temperaturen und Status",
+          "settings_interval": "Einstellungen",
+          "counter_interval": "Laufzeiten und Wärmemengen",
+          "address_offset": "Adress-Offset"
+        },
+        "data_description": {
+          "status_interval": "Wie oft Temperaturen und Status gelesen werden.",
+          "settings_interval": "Wie oft Betriebsmodus und Warmwasser-Einstellungen gelesen werden.",
+          "counter_interval": "Wie oft Laufzeiten und Wärmemengen gelesen werden.",
+          "address_offset": "0, außer tools/probe.py hat gezeigt, dass die Außentemperatur ein Register tiefer liegt."
+        }
+      }
+    }
+  },
+  "selector": {
+    "transport": {
+      "options": {
+        "rtuovertcp": "Modbus RTU über TCP (transparentes Gateway)",
+        "tcp": "Modbus TCP (Modbus-TCP-Gateway)"
+      }
+    },
+    "address_offset": {
+      "options": {
+        "0": "0 (wie dokumentiert)",
+        "-1": "-1 (alle Register eins tiefer)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "environmental_energy": {
+        "name": "Umweltenergie"
+      },
+      "fault": {
+        "name": "Störung",
+        "state": {
+          "none": "Kein Fehler",
+          "n17_1": "Fehler N17.1",
+          "n17_2": "Fehler N17.2",
+          "n17_3": "Fehler N17.3",
+          "n17_4": "Fehler N17.4",
+          "electronic_expansion_valve": "Elektronisches Expansionsventil",
+          "wpio": "WPIO",
+          "inverter": "Inverter",
+          "wqif": "WQIF",
+          "sensor_fault": "Sensorfehler",
+          "brine_low_pressure": "Niederdruck Sole",
+          "primary_circuit_alarm": "!Primärkreis",
+          "defrost_alarm": "!Abtauen",
+          "brine_low_pressure_alarm": "!Niederdruck Sole",
+          "hot_water_alarm": "!Warmwasser",
+          "compressor_load_alarm": "!Last Verdichter",
+          "coding_alarm": "!Codierung",
+          "low_pressure_alarm": "!Niederdruck",
+          "frost_protection_alarm": "!Frostschutz",
+          "high_pressure_alarm": "!Hochdruck",
+          "temperature_difference_alarm": "!Temperaturdifferenz",
+          "hot_gas_thermostat_alarm": "!Heißgasthermostat",
+          "flow_alarm": "!Durchfluss",
+          "warm_up_alarm": "!Aufwärmen",
+          "other": "Unbekannter Code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "flow_temperature": {
+        "name": "Vorlauftemperatur"
+      },
+      "heat_heating": {
+        "name": "Wärmemenge Heizen"
+      },
+      "heat_hot_water": {
+        "name": "Wärmemenge Warmwasser"
+      },
+      "heat_source_inlet_temperature": {
+        "name": "Wärmequelle Eintritt"
+      },
+      "heat_source_outlet_temperature": {
+        "name": "Wärmequelle Austritt"
+      },
+      "hot_water_setpoint_active": {
+        "name": "Warmwasser-Solltemperatur aktiv"
+      },
+      "hot_water_setpoint_max": {
+        "name": "Warmwasser-Solltemperatur maximal"
+      },
+      "hot_water_setpoint_min": {
+        "name": "Warmwasser-Solltemperatur minimal"
+      },
+      "hot_water_temperature": {
+        "name": "Warmwassertemperatur"
+      },
+      "lock": {
+        "name": "Sperre",
+        "state": {
+          "none": "Keine",
+          "volume_flow": "Volumenstrom",
+          "function_check": "Funktionskontrolle",
+          "operating_limit_high_temperature": "Einsatzgrenze HT",
+          "system_check": "Systemkontrolle",
+          "cooling_changeover_delay": "Verzögerung Umschaltung Kühlen",
+          "pump_prerun": "Pumpenvorlauf",
+          "minimum_standstill": "Mindeststandzeit",
+          "grid_load": "Netzbelastung",
+          "switching_cycle_lock": "Schaltspielsperre",
+          "hot_water_reheating": "Warmwasser Nacherwärmung",
+          "renewable": "Regenerativ",
+          "utility_lock": "EVU-Sperre",
+          "soft_starter": "Sanftanlasser",
+          "flow": "Durchfluss",
+          "heat_pump_operating_limit": "Einsatzgrenze Wärmepumpe",
+          "high_pressure": "Hochdruck",
+          "low_pressure": "Niederdruck",
+          "heat_source_operating_limit": "Einsatzgrenze Wärmequelle",
+          "system_limit": "Systemgrenze",
+          "primary_circuit_load": "Last Primärkreis",
+          "external_lock": "Sperre extern",
+          "inverter": "Inverter",
+          "warm_up": "Aufwärmen",
+          "eev_initialisation": "EvD-Initialisierung",
+          "second_heat_generator_released": "2. Wärmeerzeuger freigegeben",
+          "fault": "Störung",
+          "other": "Unbekannter Code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "operating_mode": {
+        "name": "Betriebsmodus aktiv",
+        "state": {
+          "summer": "Sommer",
+          "winter": "Winter",
+          "holiday": "Urlaub",
+          "party": "Party",
+          "second_heat_generator": "2. Wärmeerzeuger",
+          "cooling": "Kühlen",
+          "other": "Unbekannter Code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "outdoor_temperature": {
+        "name": "Außentemperatur"
+      },
+      "return_setpoint": {
+        "name": "Rücklauf-Solltemperatur"
+      },
+      "return_temperature": {
+        "name": "Rücklauftemperatur"
+      },
+      "runtime_aux_pump": {
+        "name": "Laufzeit Zusatzumwälzpumpe"
+      },
+      "runtime_compressor_1": {
+        "name": "Laufzeit Verdichter 1"
+      },
+      "runtime_compressor_2": {
+        "name": "Laufzeit Verdichter 2"
+      },
+      "runtime_flange_heater": {
+        "name": "Laufzeit Flanschheizung"
+      },
+      "runtime_heating_pump": {
+        "name": "Laufzeit Heizungspumpe"
+      },
+      "runtime_hot_water_pump": {
+        "name": "Laufzeit Warmwasserpumpe"
+      },
+      "runtime_pool_pump": {
+        "name": "Laufzeit Schwimmbadpumpe"
+      },
+      "runtime_primary_pump": {
+        "name": "Laufzeit Primärpumpe / Ventilator"
+      },
+      "runtime_second_heat_generator": {
+        "name": "Laufzeit 2. Wärmeerzeuger"
+      },
+      "sensor_fault": {
+        "name": "Sensorfehler",
+        "state": {
+          "none": "Kein Fehler",
+          "outdoor_r1": "Außenfühler (R1)",
+          "return_r2": "Rücklauffühler (R2)",
+          "hot_water_r3": "Warmwasserfühler (R3)",
+          "coding_r7": "Codierung (R7)",
+          "flow_r9": "Vorlauffühler (R9)",
+          "heating_circuit_2_r5": "2. Heizkreisfühler (R5)",
+          "heating_circuit_3_r13": "3. Heizkreisfühler (R13)",
+          "renewable_r13": "Regenerativfühler (R13)",
+          "room_1": "Raumfühler 1",
+          "room_2": "Raumfühler 2",
+          "heat_source_outlet_r6": "Fühler Wärmequellenaustritt (R6)",
+          "heat_source_inlet_r24": "Fühler Wärmequelleneintritt (R24)",
+          "collector_r23": "Kollektorfühler (R23)",
+          "low_pressure_r25": "Niederdrucksensor (R25)",
+          "high_pressure_r26": "Hochdrucksensor (R26)",
+          "room_humidity_1": "Raumfeuchte 1",
+          "room_humidity_2": "Raumfeuchte 2",
+          "frost_protection_cooling": "Fühler Frostschutz-Kälte",
+          "hot_gas": "Heißgas",
+          "return_r2_1": "Rücklauffühler (R2.1)",
+          "pool_r20": "Schwimmbadfühler (R20)",
+          "flow_passive_cooling_r11": "Vorlauffühler Kühlen passiv (R11)",
+          "return_passive_cooling_r4": "Rücklauffühler Kühlen passiv (R4)",
+          "solar_tank_r22": "Fühler Solarspeicher (R22)",
+          "demand_heating_r2_2": "Anforderungsfühler Heizen (R2.2)",
+          "rtm_econ": "RTM Econ",
+          "demand_cooling_r39": "Anforderungsfühler Kühlen (R39)",
+          "oil_temperature_compressor_1": "Öltemperaturfühler Verdichter 1",
+          "oil_temperature_compressor_2": "Öltemperaturfühler Verdichter 2",
+          "hot_gas_compressor_1": "Heißgasfühler Verdichter 1",
+          "hot_gas_compressor_2": "Heißgasfühler Verdichter 2",
+          "evaporator_air_inlet": "Verdampfer Lufteintrittsfühler",
+          "flow_sensor_secondary": "Durchflusssensor Sekundärkreis",
+          "pressure_sensor_secondary": "Drucksensor Sekundärkreis",
+          "flow_sensor_primary": "Durchflusssensor Primärkreis",
+          "pressure_sensor_primary": "Drucksensor Primärkreis",
+          "suction_gas": "Sauggasfühler",
+          "other": "Unbekannter Code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "status": {
+        "name": "Status",
+        "state": {
+          "off": "Aus",
+          "heating": "Heizen",
+          "pool": "Schwimmbad",
+          "hot_water": "Warmwasser",
+          "cooling": "Kühlen",
+          "defrost": "Abtauen",
+          "flow_monitoring": "Durchflussüberwachung",
+          "mode_change_delay": "Verzögerung Betriebsmodusumschaltung",
+          "locked": "Sperre",
+          "other": "Unbekannter Code"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      }
+    },
+    "binary_sensor": {
+      "fault_active": {
+        "name": "Störung aktiv"
+      },
+      "lock_active": {
+        "name": "Sperre aktiv"
+      }
+    },
+    "number": {
+      "hot_water_setpoint": {
+        "name": "Warmwasser-Solltemperatur"
+      },
+      "hot_water_hysteresis": {
+        "name": "Warmwasser-Hysterese"
+      },
+      "party_hours": {
+        "name": "Partystunden"
+      },
+      "holiday_days": {
+        "name": "Urlaubstage"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Betriebsmodus",
+        "state": {
+          "summer": "Sommer",
+          "winter": "Winter",
+          "holiday": "Urlaub",
+          "party": "Party"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_writable": {
+      "message": "{key} kann nicht geändert werden."
+    },
+    "out_of_range": {
+      "message": "{value} liegt außerhalb des erlaubten Bereichs {min} bis {max}."
+    },
+    "write_too_soon": {
+      "message": "Diese Einstellung wurde gerade erst geändert. Zum Schutz des Reglerspeichers ist die nächste Änderung in {seconds} s möglich."
+    },
+    "write_rejected": {
+      "message": "Die Wärmepumpe hat den Wert abgelehnt (Modbus-Exception {code})."
+    },
+    "write_failed": {
+      "message": "Schreiben fehlgeschlagen: {error}"
+    },
+    "write_not_applied": {
+      "message": "Die Wärmepumpe hat den Wert nicht übernommen, sie meldet {value}."
+    }
+  }
+}

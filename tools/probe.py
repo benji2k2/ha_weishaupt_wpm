@@ -160,12 +160,8 @@ async def probe(args: argparse.Namespace) -> Report:
                 continue
             block, block_error = await _read(client, counter.low + args.offset, 3)
             total = registers.Counter.combine(*values)
-            combined = (
-                f"{registers.Counter.combine(*block)} kWh (Block)" if block else block_error
-            )
-            rows.append(
-                [counter.description, f"{values}", f"{total} kWh (einzeln), {combined}"]
-            )
+            combined = f"{registers.Counter.combine(*block)} kWh (Block)" if block else block_error
+            rows.append([counter.description, f"{values}", f"{total} kWh (einzeln), {combined}"])
         report.table(["Wärmemenge", "Teilregister 1-4 / 5-8 / 9-12", "Summe"], rows)
 
         report.out("## 3. Blocklesen")

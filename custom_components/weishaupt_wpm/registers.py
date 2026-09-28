@@ -104,9 +104,7 @@ class Counter:
         return high * 100_000_000 + mid * 10_000 + low
 
 
-def _temperature(
-    key: str, address: int, description: str, *, optional: bool = False
-) -> Register:
+def _temperature(key: str, address: int, description: str, *, optional: bool = False) -> Register:
     return Register(
         key,
         address,

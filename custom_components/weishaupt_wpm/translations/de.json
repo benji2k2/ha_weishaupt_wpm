@@ -74,7 +74,7 @@
     "address_offset": {
       "options": {
         "0": "0 (wie dokumentiert)",
-        "-1": "-1 (alle Register eins tiefer)"
+        "minus_1": "-1 (alle Register eins tiefer)"
       }
     }
   },

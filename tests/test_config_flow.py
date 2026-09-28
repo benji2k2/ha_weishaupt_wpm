@@ -103,9 +103,7 @@ async def test_wrong_transport(hass: HomeAssistant, simulator: WpmSimulator) -> 
 async def test_already_configured(hass: HomeAssistant, simulator: WpmSimulator) -> None:
     entry_for(simulator).add_to_hass(hass)
     flow_id = await start_user_flow(hass)
-    result = await hass.config_entries.flow.async_configure(
-        flow_id, user_input(port_of(simulator))
-    )
+    result = await hass.config_entries.flow.async_configure(flow_id, user_input(port_of(simulator)))
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "already_configured"
 
@@ -133,9 +131,7 @@ async def test_reconfigure_to_another_gateway(hass: HomeAssistant) -> None:
         )
         entry.add_to_hass(hass)
         result = await entry.start_reconfigure_flow(hass)
-        result = await hass.config_entries.flow.async_configure(
-            result["flow_id"], user_input(port)
-        )
+        result = await hass.config_entries.flow.async_configure(result["flow_id"], user_input(port))
         await hass.async_block_till_done()
     finally:
         await other.stop()
@@ -156,7 +152,7 @@ async def test_options_flow(hass: HomeAssistant, simulator: WpmSimulator) -> Non
             CONF_STATUS_INTERVAL: 20.0,
             CONF_SETTINGS_INTERVAL: 600.0,
             CONF_COUNTER_INTERVAL: 1800.0,
-            CONF_ADDRESS_OFFSET: "-1",
+            CONF_ADDRESS_OFFSET: "minus_1",
         },
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY

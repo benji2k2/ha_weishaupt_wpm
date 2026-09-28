@@ -58,8 +58,15 @@ _LOGGER = logging.getLogger(__name__)
 
 TITLE = "Weishaupt WPM"
 
+# Option values must be valid translation keys, so no "-1".
+OFFSET_OPTIONS = {"0": 0, "minus_1": -1}
+
 # Read while setting up: the outdoor temperature exists on every controller.
 _TEST_REGISTER = REGISTERS_BY_KEY["outdoor_temperature"].address
+
+
+def _offset_option(offset: int) -> str:
+    return next((key for key, value in OFFSET_OPTIONS.items() if value == offset), "0")
 
 
 def _box(minimum: int, maximum: int, unit: str | None = None) -> NumberSelector:
@@ -192,7 +199,7 @@ class WpmOptionsFlow(OptionsFlow):
                     CONF_STATUS_INTERVAL: int(user_input[CONF_STATUS_INTERVAL]),
                     CONF_SETTINGS_INTERVAL: int(user_input[CONF_SETTINGS_INTERVAL]),
                     CONF_COUNTER_INTERVAL: int(user_input[CONF_COUNTER_INTERVAL]),
-                    CONF_ADDRESS_OFFSET: int(user_input[CONF_ADDRESS_OFFSET]),
+                    CONF_ADDRESS_OFFSET: OFFSET_OPTIONS[user_input[CONF_ADDRESS_OFFSET]],
                 }
             )
         options = self.config_entry.options
@@ -214,10 +221,12 @@ class WpmOptionsFlow(OptionsFlow):
                     ): _box(MIN_SLOW_INTERVAL, MAX_SLOW_INTERVAL, "s"),
                     vol.Required(
                         CONF_ADDRESS_OFFSET,
-                        default=str(options.get(CONF_ADDRESS_OFFSET, DEFAULT_ADDRESS_OFFSET)),
+                        default=_offset_option(
+                            options.get(CONF_ADDRESS_OFFSET, DEFAULT_ADDRESS_OFFSET)
+                        ),
                     ): SelectSelector(
                         SelectSelectorConfig(
-                            options=["0", "-1"],
+                            options=list(OFFSET_OPTIONS),
                             mode=SelectSelectorMode.LIST,
                             translation_key=CONF_ADDRESS_OFFSET,
                         )

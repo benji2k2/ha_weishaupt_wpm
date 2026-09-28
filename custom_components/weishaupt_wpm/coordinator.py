@@ -18,11 +18,16 @@ from homeassistant.util import dt as dt_util
 from .const import (
     CONF_ADDRESS_OFFSET,
     CONF_COUNTER_INTERVAL,
+    CONF_HOT_WATER_MAX,
+    CONF_HOT_WATER_MIN,
+    CONF_OPERATING_MODES,
     CONF_SETTINGS_INTERVAL,
     CONF_STATUS_INTERVAL,
     COUNTER_GLITCH,
     DEFAULT_ADDRESS_OFFSET,
     DEFAULT_COUNTER_INTERVAL,
+    DEFAULT_HOT_WATER_MAX,
+    DEFAULT_HOT_WATER_MIN,
     DEFAULT_SETTINGS_INTERVAL,
     DEFAULT_STATUS_INTERVAL,
     DOMAIN,
@@ -31,6 +36,8 @@ from .const import (
 from .modbus import ModbusClient, ModbusError, ModbusExceptionResponse
 from .registers import (
     COUNTERS,
+    DEFAULT_OPERATING_MODES,
+    OPERATING_MODES,
     REGISTERS_BY_ADDRESS,
     REGISTERS_BY_KEY,
     Counter,
@@ -80,6 +87,17 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
         )
         self.client = client
         self.offset: int = int(options.get(CONF_ADDRESS_OFFSET, DEFAULT_ADDRESS_OFFSET))
+        # The user's narrower limits on top of the technical write ranges.
+        self.hot_water_range: tuple[int, int] = (
+            options.get(CONF_HOT_WATER_MIN, DEFAULT_HOT_WATER_MIN),
+            options.get(CONF_HOT_WATER_MAX, DEFAULT_HOT_WATER_MAX),
+        )
+        allowed = options.get(
+            CONF_OPERATING_MODES, [OPERATING_MODES[code] for code in DEFAULT_OPERATING_MODES]
+        )
+        self.operating_modes: tuple[int, ...] = tuple(
+            code for code, key in OPERATING_MODES.items() if key in allowed
+        )
         self.unsupported: set[int] = set()
         self.group_addresses = addresses_by_group()
         self.write_log: deque[dict[str, Any]] = deque(maxlen=20)
@@ -164,6 +182,15 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
                 continue
             self._counters[counter.key] = total
 
+    def write_range(self, key: str) -> tuple[float, float]:
+        """Allowed range for writing a register: technical range, narrowed by options."""
+        register = REGISTERS_BY_KEY[key]
+        assert register.write_min is not None and register.write_max is not None
+        if key == "hot_water_setpoint":
+            low, high = self.hot_water_range
+            return max(low, register.write_min), min(high, register.write_max)
+        return register.write_min, register.write_max
+
     async def async_write(self, key: str, value: float) -> None:
         """Write a setting on explicit request, never more than needed.
 
@@ -178,16 +205,22 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
                 translation_key="not_writable",
                 translation_placeholders={"key": key},
             )
-        assert register.write_min is not None and register.write_max is not None
-        if not register.write_min <= value <= register.write_max:
+        low, high = self.write_range(key)
+        if not low <= value <= high:
             raise ServiceValidationError(
                 translation_domain=DOMAIN,
                 translation_key="out_of_range",
                 translation_placeholders={
                     "value": f"{value:g}",
-                    "min": f"{register.write_min:g}",
-                    "max": f"{register.write_max:g}",
+                    "min": f"{low:g}",
+                    "max": f"{high:g}",
                 },
+            )
+        if key == "operating_mode" and int(value) not in self.operating_modes:
+            raise ServiceValidationError(
+                translation_domain=DOMAIN,
+                translation_key="mode_not_allowed",
+                translation_placeholders={"mode": OPERATING_MODES.get(int(value), str(value))},
             )
         raw = register.encode(value)
         if self._raw.get(register.address) == raw:

@@ -67,9 +67,9 @@ class WpmNumber(WpmRegisterEntity, NumberEntity):
     def __init__(self, coordinator: WpmCoordinator, description: NumberEntityDescription) -> None:
         super().__init__(coordinator, description.key, description.key)
         self.entity_description = description
-        assert self.register.write_min is not None and self.register.write_max is not None
-        self._attr_native_min_value = self.register.write_min
-        self._attr_native_max_value = self.register.write_max
+        low, high = coordinator.write_range(description.key)
+        self._attr_native_min_value = low
+        self._attr_native_max_value = high
 
     @property
     def native_value(self) -> float | None:

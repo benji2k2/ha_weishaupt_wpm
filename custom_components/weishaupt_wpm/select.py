@@ -1,8 +1,8 @@
 """Operating mode.
 
-Only summer, winter, holiday and party are offered. "2nd heat generator" (heating
-rod only) and "cooling" can be set at the controller; the sensor "active operating
-mode" shows them, and this select then has no current option.
+Which modes are offered is an option (default: summer, winter, holiday, party). A
+mode set at the controller that is not offered is shown by the sensor "active
+operating mode"; this select then has no current option.
 """
 
 from __future__ import annotations
@@ -13,9 +13,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import WpmConfigEntry, WpmCoordinator
 from .entity import WpmRegisterEntity
-from .registers import OPERATING_MODES, SELECTABLE_OPERATING_MODES
-
-OPTIONS = {OPERATING_MODES[code]: code for code in SELECTABLE_OPERATING_MODES}
+from .registers import OPERATING_MODES
 
 
 async def async_setup_entry(
@@ -28,19 +26,19 @@ async def async_setup_entry(
 
 
 class WpmOperatingModeSelect(WpmRegisterEntity, SelectEntity):
-    """Summer, winter, holiday or party."""
-
-    _attr_options = list(OPTIONS)
+    """The operating modes chosen in the options."""
 
     def __init__(self, coordinator: WpmCoordinator) -> None:
         super().__init__(coordinator, "operating_mode", "operating_mode")
+        self._codes = {OPERATING_MODES[code]: code for code in coordinator.operating_modes}
+        self._attr_options = list(self._codes)
 
     @property
     def current_option(self) -> str | None:
         raw = self.raw
-        if raw is None or raw not in SELECTABLE_OPERATING_MODES:
+        if raw is None or raw not in self.coordinator.operating_modes:
             return None
         return OPERATING_MODES[raw]
 
     async def async_select_option(self, option: str) -> None:
-        await self.coordinator.async_write(self.register.key, OPTIONS[option])
+        await self.coordinator.async_write(self.register.key, self._codes[option])

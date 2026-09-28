@@ -53,15 +53,25 @@
           "status_interval": "Temperatures and status",
           "settings_interval": "Settings",
           "counter_interval": "Runtimes and heat amounts",
-          "address_offset": "Address offset"
+          "address_offset": "Address offset",
+          "hot_water_min": "Hot water setpoint: lowest",
+          "hot_water_max": "Hot water setpoint: highest",
+          "operating_modes": "Operating modes to offer"
         },
         "data_description": {
           "status_interval": "How often temperatures and status are read.",
           "settings_interval": "How often the operating mode and hot water settings are read.",
           "counter_interval": "How often runtimes and heat amounts are read.",
-          "address_offset": "0 unless tools/probe.py showed that the outdoor temperature sits one register lower."
+          "address_offset": "0 unless tools/probe.py showed that the outdoor temperature sits one register lower.",
+          "hot_water_min": "Lowest hot water setpoint that can be set from Home Assistant (technically 30 to 85 °C).",
+          "hot_water_max": "Highest hot water setpoint that can be set from Home Assistant.",
+          "operating_modes": "Modes the operating mode select offers. Second heat generator runs on the heating rod alone; cooling needs a cooling setup."
         }
       }
+    },
+    "error": {
+      "hot_water_range": "The highest value must not be below the lowest.",
+      "no_operating_modes": "Choose at least one operating mode."
     }
   },
   "selector": {
@@ -69,6 +79,16 @@
       "options": {
         "rtuovertcp": "Modbus RTU over TCP (transparent gateway)",
         "tcp": "Modbus TCP (Modbus TCP gateway)"
+      }
+    },
+    "operating_modes": {
+      "options": {
+        "summer": "Summer",
+        "winter": "Winter",
+        "holiday": "Holiday",
+        "party": "Party",
+        "second_heat_generator": "Second heat generator",
+        "cooling": "Cooling"
       }
     },
     "address_offset": {
@@ -335,7 +355,9 @@
           "summer": "Summer",
           "winter": "Winter",
           "holiday": "Holiday",
-          "party": "Party"
+          "party": "Party",
+          "second_heat_generator": "Second heat generator",
+          "cooling": "Cooling"
         }
       }
     }
@@ -349,6 +371,9 @@
     },
     "write_too_soon": {
       "message": "This setting was changed a moment ago. To spare the controller's memory it can be changed again in {seconds} s."
+    },
+    "mode_not_allowed": {
+      "message": "The operating mode {mode} is not enabled in the options."
     },
     "write_rejected": {
       "message": "The heat pump rejected the value (Modbus exception {code})."

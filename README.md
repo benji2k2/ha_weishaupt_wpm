@@ -45,14 +45,19 @@ the **current** Weishaupt generation (WBB, WWP LS) and do not fit these units.
 | Active operating mode | Summer, winter, holiday, party, 2nd heat generator, cooling |
 | Runtimes | Compressor, pumps, 2nd heat generator, flange heater (h) |
 | Heat amounts | Heating, hot water, environmental energy (kWh), each from three registers |
-| **Operating mode** (select) | Summer, winter, holiday, party |
-| **Hot water setpoint** | 40–60 °C |
+| **Operating mode** (select) | modes chosen in the options; default summer, winter, holiday, party |
+| **Hot water setpoint** | range in the options, default 40–60 °C (technically 30–85 °C) |
 | **Hot water hysteresis** | 2–15 K |
 | **Party hours**, **holiday days** | 0–72 h, 0–150 days |
 
-"2nd heat generator" (heating rod only) and "cooling" are deliberately not
-selectable from Home Assistant. If they are set at the controller, "active
-operating mode" shows them.
+"2nd heat generator" (heating rod only) and "cooling" are only offered once
+enabled in the options. A mode set at the controller that is not offered is
+shown by "active operating mode".
+
+**Party and holiday** have their own durations (party hours, holiday days). How
+exactly the controller uses them — whether the duration must be set before
+switching, whether it switches back by itself, and whether the values count
+down — is still to be checked on a real unit.
 
 Registers a unit does not have are detected on the first read and not asked
 for again; their entities are unavailable.
@@ -112,8 +117,9 @@ The error messages tell "gateway unreachable" apart from "gateway reachable,
 heat pump does not answer" (baud rate, address, A/B swapped).
 
 **Options:** polling intervals for temperatures/status (default 30 s),
-settings (5 min), runtimes/heat amounts (15 min), and the **address offset**
-(0 or −1, see below).
+settings (5 min), runtimes/heat amounts (15 min), lowest and highest **hot water
+setpoint**, the **operating modes offered**, and the **address offset** (0 or −1,
+see below).
 
 ## Checking with tools/probe.py
 

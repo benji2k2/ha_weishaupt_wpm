@@ -151,7 +151,7 @@ REGISTERS: tuple[Register, ...] = (
         valid_min=0,
         valid_max=5,
         write_min=0,
-        write_max=3,
+        write_max=5,
     ),
     Register(
         "party_hours",
@@ -171,7 +171,9 @@ REGISTERS: tuple[Register, ...] = (
         write_min=0,
         write_max=150,
     ),
-    # Hot water settings (whole °C / K according to the documentation, to be verified)
+    # Hot water settings (whole °C / K according to the documentation, to be verified).
+    # The write range of the setpoint is the technical one from the Weishaupt manual
+    # (30...85 °C); the integration's options narrow it (default 40...60 °C).
     Register(
         "hot_water_hysteresis",
         252,
@@ -189,8 +191,8 @@ REGISTERS: tuple[Register, ...] = (
         "Warmwasser Solltemperatur",
         valid_min=10,
         valid_max=85,
-        write_min=40,
-        write_max=60,
+        write_min=30,
+        write_max=85,
     ),
     Register(
         "hot_water_setpoint_max",
@@ -259,8 +261,9 @@ def blocks(
     return runs
 
 
-# Register 222. Only the first four are offered for selection (user decision):
-# "2nd heat generator" runs on the heating rod alone, "cooling" needs a cooling setup.
+# Register 222. Which modes are offered for selection is an option of the integration;
+# by default not "2nd heat generator" (heating rod alone) and not "cooling" (needs a
+# cooling setup).
 OPERATING_MODES: dict[int, str] = {
     0: "summer",
     1: "winter",
@@ -269,7 +272,7 @@ OPERATING_MODES: dict[int, str] = {
     4: "second_heat_generator",
     5: "cooling",
 }
-SELECTABLE_OPERATING_MODES: tuple[int, ...] = (0, 1, 2, 3)
+DEFAULT_OPERATING_MODES: tuple[int, ...] = (0, 1, 2, 3)
 
 # Register 103, software L/M.
 STATUS_CODES: dict[int, str] = {

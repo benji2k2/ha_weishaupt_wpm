@@ -79,7 +79,7 @@ async def test_exception_for_a_gap(served) -> None:  # noqa: ANN001
 async def test_out_of_range_write_is_rejected(served) -> None:  # noqa: ANN001
     sim, client, _ = served
     with pytest.raises(ModbusExceptionResponse) as err:
-        await client.write_register(254, 70)
+        await client.write_register(254, 90)
     assert err.value.code == 3
     assert sim.writes == []
 

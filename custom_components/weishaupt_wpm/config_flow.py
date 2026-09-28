@@ -27,12 +27,17 @@ import voluptuous as vol
 from .const import (
     CONF_ADDRESS_OFFSET,
     CONF_COUNTER_INTERVAL,
+    CONF_HOT_WATER_MAX,
+    CONF_HOT_WATER_MIN,
+    CONF_OPERATING_MODES,
     CONF_SETTINGS_INTERVAL,
     CONF_STATUS_INTERVAL,
     CONF_TRANSPORT,
     CONF_UNIT,
     DEFAULT_ADDRESS_OFFSET,
     DEFAULT_COUNTER_INTERVAL,
+    DEFAULT_HOT_WATER_MAX,
+    DEFAULT_HOT_WATER_MIN,
     DEFAULT_PORT,
     DEFAULT_SETTINGS_INTERVAL,
     DEFAULT_STATUS_INTERVAL,
@@ -52,7 +57,7 @@ from .modbus import (
     ModbusExceptionResponse,
     ModbusTimeout,
 )
-from .registers import REGISTERS_BY_KEY
+from .registers import DEFAULT_OPERATING_MODES, OPERATING_MODES, REGISTERS_BY_KEY
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -190,47 +195,81 @@ class WpmConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class WpmOptionsFlow(OptionsFlow):
-    """Polling intervals and address offset."""
+    """Polling intervals, address offset, hot water range and offered operating modes."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
         if user_input is not None:
-            return self.async_create_entry(
-                data={
-                    CONF_STATUS_INTERVAL: int(user_input[CONF_STATUS_INTERVAL]),
-                    CONF_SETTINGS_INTERVAL: int(user_input[CONF_SETTINGS_INTERVAL]),
-                    CONF_COUNTER_INTERVAL: int(user_input[CONF_COUNTER_INTERVAL]),
-                    CONF_ADDRESS_OFFSET: OFFSET_OPTIONS[user_input[CONF_ADDRESS_OFFSET]],
-                }
-            )
-        options = self.config_entry.options
+            chosen = user_input[CONF_OPERATING_MODES]
+            data = {
+                CONF_STATUS_INTERVAL: int(user_input[CONF_STATUS_INTERVAL]),
+                CONF_SETTINGS_INTERVAL: int(user_input[CONF_SETTINGS_INTERVAL]),
+                CONF_COUNTER_INTERVAL: int(user_input[CONF_COUNTER_INTERVAL]),
+                CONF_ADDRESS_OFFSET: OFFSET_OPTIONS[user_input[CONF_ADDRESS_OFFSET]],
+                CONF_HOT_WATER_MIN: int(user_input[CONF_HOT_WATER_MIN]),
+                CONF_HOT_WATER_MAX: int(user_input[CONF_HOT_WATER_MAX]),
+                CONF_OPERATING_MODES: [key for key in OPERATING_MODES.values() if key in chosen],
+            }
+            if data[CONF_HOT_WATER_MIN] > data[CONF_HOT_WATER_MAX]:
+                errors[CONF_HOT_WATER_MAX] = "hot_water_range"
+            if not data[CONF_OPERATING_MODES]:
+                errors[CONF_OPERATING_MODES] = "no_operating_modes"
+            if not errors:
+                return self.async_create_entry(data=data)
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(
-                        CONF_STATUS_INTERVAL,
-                        default=options.get(CONF_STATUS_INTERVAL, DEFAULT_STATUS_INTERVAL),
-                    ): _box(MIN_STATUS_INTERVAL, MAX_STATUS_INTERVAL, "s"),
-                    vol.Required(
-                        CONF_SETTINGS_INTERVAL,
-                        default=options.get(CONF_SETTINGS_INTERVAL, DEFAULT_SETTINGS_INTERVAL),
-                    ): _box(MIN_SLOW_INTERVAL, MAX_SLOW_INTERVAL, "s"),
-                    vol.Required(
-                        CONF_COUNTER_INTERVAL,
-                        default=options.get(CONF_COUNTER_INTERVAL, DEFAULT_COUNTER_INTERVAL),
-                    ): _box(MIN_SLOW_INTERVAL, MAX_SLOW_INTERVAL, "s"),
-                    vol.Required(
-                        CONF_ADDRESS_OFFSET,
-                        default=_offset_option(
-                            options.get(CONF_ADDRESS_OFFSET, DEFAULT_ADDRESS_OFFSET)
-                        ),
-                    ): SelectSelector(
-                        SelectSelectorConfig(
-                            options=list(OFFSET_OPTIONS),
-                            mode=SelectSelectorMode.LIST,
-                            translation_key=CONF_ADDRESS_OFFSET,
-                        )
-                    ),
-                }
-            ),
+            data_schema=_options_schema(user_input or dict(self.config_entry.options)),
+            errors=errors,
         )
+
+
+def _options_schema(current: dict[str, Any]) -> vol.Schema:
+    setpoint = REGISTERS_BY_KEY["hot_water_setpoint"]
+    assert setpoint.write_min is not None and setpoint.write_max is not None
+    low, high = int(setpoint.write_min), int(setpoint.write_max)
+    offset = current.get(CONF_ADDRESS_OFFSET, DEFAULT_ADDRESS_OFFSET)
+    if not isinstance(offset, str):
+        offset = _offset_option(offset)
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_STATUS_INTERVAL,
+                default=current.get(CONF_STATUS_INTERVAL, DEFAULT_STATUS_INTERVAL),
+            ): _box(MIN_STATUS_INTERVAL, MAX_STATUS_INTERVAL, "s"),
+            vol.Required(
+                CONF_SETTINGS_INTERVAL,
+                default=current.get(CONF_SETTINGS_INTERVAL, DEFAULT_SETTINGS_INTERVAL),
+            ): _box(MIN_SLOW_INTERVAL, MAX_SLOW_INTERVAL, "s"),
+            vol.Required(
+                CONF_COUNTER_INTERVAL,
+                default=current.get(CONF_COUNTER_INTERVAL, DEFAULT_COUNTER_INTERVAL),
+            ): _box(MIN_SLOW_INTERVAL, MAX_SLOW_INTERVAL, "s"),
+            vol.Required(
+                CONF_HOT_WATER_MIN, default=current.get(CONF_HOT_WATER_MIN, DEFAULT_HOT_WATER_MIN)
+            ): _box(low, high, "°C"),
+            vol.Required(
+                CONF_HOT_WATER_MAX, default=current.get(CONF_HOT_WATER_MAX, DEFAULT_HOT_WATER_MAX)
+            ): _box(low, high, "°C"),
+            vol.Required(
+                CONF_OPERATING_MODES,
+                default=current.get(
+                    CONF_OPERATING_MODES,
+                    [OPERATING_MODES[code] for code in DEFAULT_OPERATING_MODES],
+                ),
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=list(OPERATING_MODES.values()),
+                    multiple=True,
+                    mode=SelectSelectorMode.LIST,
+                    translation_key=CONF_OPERATING_MODES,
+                )
+            ),
+            vol.Required(CONF_ADDRESS_OFFSET, default=offset): SelectSelector(
+                SelectSelectorConfig(
+                    options=list(OFFSET_OPTIONS),
+                    mode=SelectSelectorMode.LIST,
+                    translation_key=CONF_ADDRESS_OFFSET,
+                )
+            ),
+        }
+    )

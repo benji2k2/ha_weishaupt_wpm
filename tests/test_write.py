@@ -7,7 +7,14 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.weishaupt_wpm.const import (
+    CONF_HOT_WATER_MAX,
+    CONF_HOT_WATER_MIN,
+    CONF_OPERATING_MODES,
+)
 from tools.simulator import WpmSimulator
+
+from .conftest import entry_for
 
 
 async def set_number(hass: HomeAssistant, entity_id: str, value: float) -> None:
@@ -107,3 +114,40 @@ async def test_controller_rejects_the_value(
     assert err.value.translation_key == "write_rejected"
     assert simulator.get(254) == 50
     assert setup_entry.runtime_data.write_log[-1]["result"].startswith("rejected")
+
+
+async def test_hot_water_range_from_the_options(
+    hass: HomeAssistant, simulator: WpmSimulator
+) -> None:
+    entry = entry_for(simulator, **{CONF_HOT_WATER_MIN: 45, CONF_HOT_WATER_MAX: 55})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    number = hass.states.get("number.weishaupt_wpm_hot_water_setpoint")
+    assert (number.attributes["min"], number.attributes["max"]) == (45, 55)
+    with pytest.raises(ServiceValidationError):
+        await entry.runtime_data.async_write("hot_water_setpoint", 58)
+    await set_number(hass, "number.weishaupt_wpm_hot_water_setpoint", 55)
+    assert simulator.get(254) == 55
+    await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_modes_from_the_options(hass: HomeAssistant, simulator: WpmSimulator) -> None:
+    entry = entry_for(simulator, **{CONF_OPERATING_MODES: ["summer", "winter", "cooling"]})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    select = hass.states.get("select.weishaupt_wpm_operating_mode")
+    assert select.attributes["options"] == ["summer", "winter", "cooling"]
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": "select.weishaupt_wpm_operating_mode", "option": "cooling"},
+        blocking=True,
+    )
+    assert simulator.get(222) == 5
+    with pytest.raises(ServiceValidationError) as err:
+        await entry.runtime_data.async_write("operating_mode", 3)  # party, not enabled
+    assert err.value.translation_key == "mode_not_allowed"
+    assert simulator.get(222) == 5
+    await hass.config_entries.async_unload(entry.entry_id)

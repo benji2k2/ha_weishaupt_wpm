@@ -14,6 +14,9 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.weishaupt_wpm.const import (
     CONF_ADDRESS_OFFSET,
     CONF_COUNTER_INTERVAL,
+    CONF_HOT_WATER_MAX,
+    CONF_HOT_WATER_MIN,
+    CONF_OPERATING_MODES,
     CONF_SETTINGS_INTERVAL,
     CONF_STATUS_INTERVAL,
     CONF_TRANSPORT,
@@ -141,24 +144,60 @@ async def test_reconfigure_to_another_gateway(hass: HomeAssistant) -> None:
     assert entry.data[CONF_TRANSPORT] == "rtuovertcp"
 
 
+OPTIONS_INPUT = {
+    CONF_STATUS_INTERVAL: 20.0,
+    CONF_SETTINGS_INTERVAL: 600.0,
+    CONF_COUNTER_INTERVAL: 1800.0,
+    CONF_HOT_WATER_MIN: 45.0,
+    CONF_HOT_WATER_MAX: 55.0,
+    CONF_OPERATING_MODES: ["cooling", "summer", "winter"],
+    CONF_ADDRESS_OFFSET: "minus_1",
+}
+
+
 async def test_options_flow(hass: HomeAssistant, simulator: WpmSimulator) -> None:
     entry = entry_for(simulator)
     entry.add_to_hass(hass)
     result = await hass.config_entries.options.async_init(entry.entry_id)
     assert result["type"] is FlowResultType.FORM
-    result = await hass.config_entries.options.async_configure(
-        result["flow_id"],
-        {
-            CONF_STATUS_INTERVAL: 20.0,
-            CONF_SETTINGS_INTERVAL: 600.0,
-            CONF_COUNTER_INTERVAL: 1800.0,
-            CONF_ADDRESS_OFFSET: "minus_1",
-        },
-    )
+    result = await hass.config_entries.options.async_configure(result["flow_id"], OPTIONS_INPUT)
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert entry.options == {
         CONF_STATUS_INTERVAL: 20,
         CONF_SETTINGS_INTERVAL: 600,
         CONF_COUNTER_INTERVAL: 1800,
+        CONF_HOT_WATER_MIN: 45,
+        CONF_HOT_WATER_MAX: 55,
+        # Stored in the controller's order, whatever order they were ticked in.
+        CONF_OPERATING_MODES: ["summer", "winter", "cooling"],
         CONF_ADDRESS_OFFSET: -1,
     }
+
+
+@pytest.mark.parametrize(
+    ("changes", "field", "error"),
+    [
+        (
+            {CONF_HOT_WATER_MIN: 60.0, CONF_HOT_WATER_MAX: 50.0},
+            CONF_HOT_WATER_MAX,
+            "hot_water_range",
+        ),
+        ({CONF_OPERATING_MODES: []}, CONF_OPERATING_MODES, "no_operating_modes"),
+    ],
+)
+async def test_options_are_checked(
+    hass: HomeAssistant,
+    simulator: WpmSimulator,
+    changes: dict[str, object],
+    field: str,
+    error: str,
+) -> None:
+    entry = entry_for(simulator)
+    entry.add_to_hass(hass)
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {**OPTIONS_INPUT, **changes}
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {field: error}
+    assert entry.options == {}

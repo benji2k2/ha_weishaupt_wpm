@@ -9,12 +9,12 @@ import pytest
 
 from custom_components.weishaupt_wpm.registers import (
     COUNTERS,
+    DEFAULT_OPERATING_MODES,
     FAULT_CODES,
     LOCK_CODES,
     OPERATING_MODES,
     REGISTERS,
     REGISTERS_BY_KEY,
-    SELECTABLE_OPERATING_MODES,
     SENSOR_FAULT_CODES,
     STATUS_CODES,
     UNKNOWN_CODE,
@@ -46,10 +46,11 @@ def test_temperatures_are_signed_tenths() -> None:
 
 def test_write_ranges() -> None:
     setpoint = REGISTERS_BY_KEY["hot_water_setpoint"]
-    assert (setpoint.write_min, setpoint.write_max) == (40, 60)
+    # Technical ranges; the options narrow them (default 40-60 °C, four modes).
+    assert (setpoint.write_min, setpoint.write_max) == (30, 85)
     mode = REGISTERS_BY_KEY["operating_mode"]
-    assert (mode.write_min, mode.write_max) == (0, 3)
-    assert tuple(range(4)) == SELECTABLE_OPERATING_MODES
+    assert (mode.write_min, mode.write_max) == (0, 5)
+    assert tuple(range(4)) == DEFAULT_OPERATING_MODES
     assert not REGISTERS_BY_KEY["status"].writable
     with pytest.raises(ValueError):
         REGISTERS_BY_KEY["runtime_compressor_1"].encode(70000)
@@ -81,7 +82,7 @@ def test_every_code_has_a_translation(language: str) -> None:
     ):
         assert set(sensors[key]["state"]) == {*codes.values(), UNKNOWN_CODE}, key
     select_states = strings["entity"]["select"]["operating_mode"]["state"]
-    assert set(select_states) == {OPERATING_MODES[code] for code in SELECTABLE_OPERATING_MODES}
+    assert set(select_states) == set(OPERATING_MODES.values())
 
 
 def test_translations_have_the_same_keys() -> None:

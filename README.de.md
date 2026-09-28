@@ -47,14 +47,19 @@ Anlagen.
 | Betriebsmodus aktiv | Sommer, Winter, Urlaub, Party, 2. Wärmeerzeuger, Kühlen |
 | Laufzeiten | Verdichter, Pumpen, 2. Wärmeerzeuger, Flanschheizung (h) |
 | Wärmemengen | Heizen, Warmwasser, Umweltenergie (kWh), aus je drei Registern |
-| **Betriebsmodus** (Auswahl) | Sommer, Winter, Urlaub, Party |
-| **Warmwasser-Solltemperatur** | 40–60 °C |
+| **Betriebsmodus** (Auswahl) | welche Modi, legst du in den Optionen fest; Vorgabe Sommer, Winter, Urlaub, Party |
+| **Warmwasser-Solltemperatur** | Bereich in den Optionen, Vorgabe 40–60 °C (technisch 30–85 °C) |
 | **Warmwasser-Hysterese** | 2–15 K |
 | **Partystunden**, **Urlaubstage** | 0–72 h, 0–150 Tage |
 
-„2. Wärmeerzeuger“ (nur Heizstab) und „Kühlen“ lassen sich bewusst nicht aus
-Home Assistant wählen. Sind sie am Regler gesetzt, zeigt „Betriebsmodus aktiv“
-sie an.
+„2. Wärmeerzeuger“ (nur Heizstab) und „Kühlen“ bietet die Auswahl erst an, wenn
+sie in den Optionen freigegeben sind. Ist am Regler ein Modus gesetzt, der nicht
+angeboten wird, zeigt „Betriebsmodus aktiv“ ihn an.
+
+**Party und Urlaub** haben eigene Dauer-Werte (Partystunden, Urlaubstage). Wie
+der Regler sie genau verwendet — ob die Dauer vor dem Umschalten gesetzt sein
+muss, ob er danach selbst zurückschaltet und ob die Werte herunterzählen —, ist
+noch an der Anlage zu prüfen.
 
 Register, die es an einer Anlage nicht gibt, erkennt die Integration beim
 ersten Lesen und fragt sie danach nicht mehr ab; ihre Entitäten sind nicht
@@ -116,8 +121,9 @@ Die Fehlermeldungen unterscheiden „Gateway nicht erreichbar“ von „Gateway
 erreichbar, Wärmepumpe antwortet nicht“ (Baudrate, Adresse, A/B vertauscht).
 
 **Optionen:** Abfrageintervalle für Temperaturen/Status (Standard 30 s),
-Einstellungen (5 min), Laufzeiten/Wärmemengen (15 min) und der **Adress-Offset**
-(0 oder −1, siehe unten).
+Einstellungen (5 min), Laufzeiten/Wärmemengen (15 min), niedrigster und höchster
+**Warmwasser-Sollwert**, die **angebotenen Betriebsmodi** und der
+**Adress-Offset** (0 oder −1, siehe unten).
 
 ## Prüfen mit tools/probe.py
 

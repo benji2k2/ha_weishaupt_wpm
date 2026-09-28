@@ -53,15 +53,25 @@
           "status_interval": "Temperaturen und Status",
           "settings_interval": "Einstellungen",
           "counter_interval": "Laufzeiten und Wärmemengen",
-          "address_offset": "Adress-Offset"
+          "address_offset": "Adress-Offset",
+          "hot_water_min": "Warmwasser-Soll: niedrigster Wert",
+          "hot_water_max": "Warmwasser-Soll: höchster Wert",
+          "operating_modes": "Angebotene Betriebsmodi"
         },
         "data_description": {
           "status_interval": "Wie oft Temperaturen und Status gelesen werden.",
           "settings_interval": "Wie oft Betriebsmodus und Warmwasser-Einstellungen gelesen werden.",
           "counter_interval": "Wie oft Laufzeiten und Wärmemengen gelesen werden.",
-          "address_offset": "0, außer tools/probe.py hat gezeigt, dass die Außentemperatur ein Register tiefer liegt."
+          "address_offset": "0, außer tools/probe.py hat gezeigt, dass die Außentemperatur ein Register tiefer liegt.",
+          "hot_water_min": "Niedrigster Warmwasser-Sollwert, der sich aus Home Assistant einstellen lässt (technisch 30 bis 85 °C).",
+          "hot_water_max": "Höchster Warmwasser-Sollwert, der sich aus Home Assistant einstellen lässt.",
+          "operating_modes": "Modi, die die Auswahl Betriebsmodus anbietet. 2. Wärmeerzeuger heizt nur mit dem Heizstab; Kühlen braucht eine dafür ausgelegte Anlage."
         }
       }
+    },
+    "error": {
+      "hot_water_range": "Der höchste Wert darf nicht unter dem niedrigsten liegen.",
+      "no_operating_modes": "Mindestens einen Betriebsmodus wählen."
     }
   },
   "selector": {
@@ -69,6 +79,16 @@
       "options": {
         "rtuovertcp": "Modbus RTU über TCP (transparentes Gateway)",
         "tcp": "Modbus TCP (Modbus-TCP-Gateway)"
+      }
+    },
+    "operating_modes": {
+      "options": {
+        "summer": "Sommer",
+        "winter": "Winter",
+        "holiday": "Urlaub",
+        "party": "Party",
+        "second_heat_generator": "2. Wärmeerzeuger",
+        "cooling": "Kühlen"
       }
     },
     "address_offset": {
@@ -335,7 +355,9 @@
           "summer": "Sommer",
           "winter": "Winter",
           "holiday": "Urlaub",
-          "party": "Party"
+          "party": "Party",
+          "second_heat_generator": "2. Wärmeerzeuger",
+          "cooling": "Kühlen"
         }
       }
     }
@@ -349,6 +371,9 @@
     },
     "write_too_soon": {
       "message": "Diese Einstellung wurde gerade erst geändert. Zum Schutz des Reglerspeichers ist die nächste Änderung in {seconds} s möglich."
+    },
+    "mode_not_allowed": {
+      "message": "Der Betriebsmodus {mode} ist in den Optionen nicht freigegeben."
     },
     "write_rejected": {
       "message": "Die Wärmepumpe hat den Wert abgelehnt (Modbus-Exception {code})."

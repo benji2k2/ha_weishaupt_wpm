@@ -44,8 +44,12 @@ async def test_entities_show_the_simulated_values(
 async def test_one_device_with_all_entities(
     hass: HomeAssistant, setup_entry: MockConfigEntry
 ) -> None:
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, setup_entry.unique_id)})
-    assert device is not None
+    # Looked up within the config entry: async_get_device(identifiers=...) is deprecated
+    # since 2026.9, and its replacement does not exist before that.
+    devices = dr.async_entries_for_config_entry(dr.async_get(hass), setup_entry.entry_id)
+    assert len(devices) == 1
+    device = devices[0]
+    assert (DOMAIN, setup_entry.unique_id) in device.identifiers
     assert device.manufacturer == "Weishaupt"
     entities = er.async_entries_for_device(er.async_get(hass), device.id, True)
     # 27 sensors (24 registers, 3 heat amounts), 2 binary sensors, 4 numbers, 1 select.

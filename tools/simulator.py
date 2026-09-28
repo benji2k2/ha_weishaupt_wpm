@@ -5,7 +5,11 @@
 
 Behaves like the real setup as far as the integration can tell:
 
-* one TCP client at a time (further connections are closed right away),
+* one TCP client at a time: a new connection throws out the old one, like the
+  Waveshare gateway with "Max Clients 1" and "kick off old connection"
+  (``kick_old=False`` refuses the new one instead),
+* optionally answers in small pieces (``fragment``), as a transparent gateway
+  forwards serial bytes as they arrive, and can garble answers (``corrupt_next``),
 * RTU frames with CRC (or Modbus TCP with ``--transport tcp``),
 * only FC03 and FC06; everything else, including FC16, gets exception 1,
 * a read that touches an unused address gets exception 2, so block reads fail
@@ -91,6 +95,7 @@ class WpmSimulator:
         transport: str = modbus.TRANSPORT_RTU_OVER_TCP,
         offset: int = 0,
         missing: tuple[int, ...] = DEFAULT_MISSING,
+        kick_old: bool = True,
     ) -> None:
         self.unit = unit
         self.transport = transport
@@ -101,8 +106,12 @@ class WpmSimulator:
         self.writes: list[tuple[int, int]] = []
         self.requests = 0
         self.silent_requests = 0  # answer nothing to the next n requests
+        self.corrupt_next = 0  # garble the next n answers
+        self.fragment = False  # send answers byte by byte
+        self.kick_old = kick_old
         self.refused_connections = 0
-        self._busy = False
+        self.kicked_connections = 0
+        self._current: tuple[asyncio.StreamWriter, asyncio.Task | None] | None = None
         self._tick = 0
         self._server: asyncio.AbstractServer | None = None
         self._writers: set[asyncio.StreamWriter] = set()
@@ -215,14 +224,20 @@ class WpmSimulator:
         return transaction, unit, pdu
 
     async def _serve(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
-        if self._busy:
-            # The transparent gateway accepts only one client at a time.
-            self.refused_connections += 1
-            writer.close()
-            return
-        self._busy = True
-        self._writers.add(writer)
         task = asyncio.current_task()
+        if self._current is not None:
+            if not self.kick_old:
+                self.refused_connections += 1
+                writer.close()
+                return
+            # "Kick off old connection": the newcomer wins, the old client loses its socket.
+            old_writer, old_task = self._current
+            self.kicked_connections += 1
+            old_writer.close()
+            if old_task is not None:
+                old_task.cancel()
+        self._current = (writer, task)
+        self._writers.add(writer)
         if task is not None:
             self._tasks.add(task)
             task.add_done_callback(self._tasks.discard)
@@ -247,14 +262,26 @@ class WpmSimulator:
                     continue
                 response = self.handle_pdu(pdu)
                 if self.transport == modbus.TRANSPORT_TCP:
-                    writer.write(modbus.tcp_frame(transaction, unit, response))
+                    frame = bytearray(modbus.tcp_frame(transaction, unit, response))
                 else:
-                    writer.write(modbus.rtu_frame(unit, response))
-                await writer.drain()
+                    frame = bytearray(modbus.rtu_frame(unit, response))
+                if self.corrupt_next:
+                    self.corrupt_next -= 1
+                    # RTU: broken CRC. TCP: wrong transaction id.
+                    frame[-1 if self.transport != modbus.TRANSPORT_TCP else 0] ^= 0xFF
+                if self.fragment:
+                    for index in range(len(frame)):
+                        writer.write(bytes(frame[index : index + 1]))
+                        await writer.drain()
+                        await asyncio.sleep(0.002)
+                else:
+                    writer.write(bytes(frame))
+                    await writer.drain()
         except (asyncio.IncompleteReadError, ConnectionError):
             pass
         finally:
-            self._busy = False
+            if self._current is not None and self._current[0] is writer:
+                self._current = None
             self._writers.discard(writer)
             writer.close()
 

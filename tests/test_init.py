@@ -131,6 +131,22 @@ async def test_unavailable_while_the_gateway_is_gone(
     assert state(hass, "sensor.weishaupt_wpm_outdoor_temperature") == STATE_UNAVAILABLE
 
 
+async def test_recovers_after_being_thrown_out(
+    hass: HomeAssistant, setup_entry: MockConfigEntry, simulator: WpmSimulator
+) -> None:
+    # tools/probe.py started while Home Assistant is connected: the gateway throws HA out.
+    port = simulator._server.sockets[0].getsockname()[1]
+    probe = ModbusClient("127.0.0.1", port, timeout=0.5, pause=0.0)
+    await probe.read_holding_registers(1, 1)
+    await probe.close()
+    assert simulator.kicked_connections == 1
+    coordinator = setup_entry.runtime_data
+    simulator.set_value("outdoor_temperature", 4.2)
+    await coordinator.async_refresh()
+    assert coordinator.last_update_success
+    assert state(hass, "sensor.weishaupt_wpm_outdoor_temperature") == "4.2"
+
+
 async def test_not_ready_without_answer(
     hass: HomeAssistant, simulator: WpmSimulator, monkeypatch: pytest.MonkeyPatch
 ) -> None:

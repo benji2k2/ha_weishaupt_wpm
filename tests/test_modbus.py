@@ -84,14 +84,59 @@ async def test_out_of_range_write_is_rejected(served) -> None:  # noqa: ANN001
     assert sim.writes == []
 
 
-async def test_gateway_takes_one_client(served) -> None:  # noqa: ANN001
+async def test_new_client_throws_out_the_old_one(served) -> None:  # noqa: ANN001
+    # Like the Waveshare gateway with "Max Clients 1" and "kick off old connection":
+    # starting tools/probe.py while Home Assistant is connected.
     sim, client, port = served
     await client.read_holding_registers(1, 1)
-    other = ModbusClient("127.0.0.1", port, 1, sim.transport, timeout=0.5, retries=0)
-    with pytest.raises(ModbusConnectionError):
-        await other.read_holding_registers(1, 1)
+    other = ModbusClient("127.0.0.1", port, 1, sim.transport, timeout=0.5, pause=0.0)
+    assert await other.read_holding_registers(103, 1) == [sim.get(103)]
+    assert sim.kicked_connections == 1
+    # The old client notices on its next request, reconnects and takes the gateway back.
+    assert await client.read_holding_registers(1, 1) == [sim.get(1)]
+    assert client.stats["connects"] == 2
+    assert sim.kicked_connections == 2
     await other.close()
-    assert sim.refused_connections == 1
+
+
+async def test_gateway_can_refuse_a_second_client() -> None:
+    sim = WpmSimulator(kick_old=False)
+    port = await sim.start()
+    first = ModbusClient("127.0.0.1", port, timeout=0.5, pause=0.0)
+    second = ModbusClient("127.0.0.1", port, timeout=0.5, retries=0)
+    try:
+        await first.read_holding_registers(1, 1)
+        with pytest.raises(ModbusConnectionError):
+            await second.read_holding_registers(1, 1)
+        assert sim.refused_connections == 1
+    finally:
+        await first.close()
+        await second.close()
+        await sim.stop()
+
+
+async def test_answers_in_small_pieces(served) -> None:  # noqa: ANN001
+    # A transparent gateway forwards serial bytes as they arrive, often in several packets.
+    sim, client, _ = served
+    sim.fragment = True
+    assert await client.read_holding_registers(103, 4) == [sim.get(a) for a in range(103, 107)]
+    await client.write_register(254, 52)
+    assert sim.get(254) == 52
+
+
+async def test_garbled_answer_is_retried(served) -> None:  # noqa: ANN001
+    sim, client, _ = served
+    sim.corrupt_next = 1
+    assert await client.read_holding_registers(1, 3) == [sim.get(1), sim.get(2), sim.get(3)]
+    assert client.stats["errors"] == 1
+    assert client.stats["connects"] == 2  # dropped the connection so no late bytes can mix in
+
+
+async def test_garbled_answer_twice_gives_up(served) -> None:  # noqa: ANN001
+    sim, client, _ = served
+    sim.corrupt_next = 2
+    with pytest.raises(ModbusFrameError):
+        await client.read_holding_registers(1, 1)
 
 
 async def test_read_retries_after_a_lost_answer(served) -> None:  # noqa: ANN001

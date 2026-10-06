@@ -170,6 +170,16 @@ ruff check . && ruff format --check .
 This project is not affiliated with or supported by Weishaupt or Dimplex. The
 names only identify the supported devices.
 
+## Icons
+
+The icons and logos live in `custom_components/weishaupt_wpm/brand/`. Home Assistant picks
+them up from there from **2026.3** onwards. They are made from the Weishaupt logo as used on
+[weishaupt.de](https://www.weishaupt.de/).
+
+This project is not affiliated with or endorsed by Max Weishaupt SE. Weishaupt and the
+Weishaupt logo are trademarks of Max Weishaupt SE and are used only to identify the supported
+hardware.
+
 ## License
 
 MIT

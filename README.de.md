@@ -176,6 +176,16 @@ Dieses Projekt steht in keiner Verbindung zu Weishaupt oder Dimplex und wird
 von ihnen nicht unterstützt. Die Namen dienen nur zur Kennzeichnung der
 unterstützten Geräte.
 
+## Icons
+
+Icons und Logos liegen in `custom_components/weishaupt_wpm/brand/`. Home Assistant nutzt sie
+von dort ab **2026.3**. Sie sind aus dem Weishaupt-Logo erstellt, wie es auf
+[weishaupt.de](https://www.weishaupt.de/) verwendet wird.
+
+Dieses Projekt ist nicht mit der Max Weishaupt SE verbunden und wird nicht von ihr unterstützt.
+Weishaupt und das Weishaupt-Logo sind Marken der Max Weishaupt SE und werden nur zur
+Kennzeichnung der unterstützten Hardware verwendet.
+
 ## Lizenz
 
 MIT

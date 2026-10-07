@@ -86,11 +86,10 @@ REGISTER_SENSORS: tuple[WpmSensorDescription, ...] = (
     _temperature("room_temperature_setpoint", measured=False),
     _temperature("heating_curve_fixed_setpoint", measured=False),
     _temperature("heating_curve_end_point", measured=False),
+    # A temperature difference, like the hot water hysteresis: no temperature device class.
     WpmSensorDescription(
         key="heating_hysteresis",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement="K",
-        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.KELVIN,
         suggested_display_precision=1,
     ),
     WpmSensorDescription(

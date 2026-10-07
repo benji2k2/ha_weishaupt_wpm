@@ -164,7 +164,7 @@ REGISTERS: tuple[Register, ...] = (
         "pressure_8",
         8,
         Group.STATUS,
-        "Druck (Reg 8)",
+        "Unbekannt, Kandidat Hochdruck (Display 12,0 bar bei 120, nicht in der Dimplex-Liste)",
         scale=0.1,
         optional=True,
     ),
@@ -172,7 +172,7 @@ REGISTERS: tuple[Register, ...] = (
         "pressure_101",
         101,
         Group.STATUS,
-        "Druck (Reg 101)",
+        "Unbekannt, Kandidat Niederdruck (Display 11,9 bar bei 119, nicht in der Dimplex-Liste)",
         scale=0.1,
         optional=True,
     ),
@@ -210,7 +210,9 @@ REGISTERS: tuple[Register, ...] = (
         write_min=0,
         write_max=150,
     ),
-    # Heating curve / Room temperature settings (HK1)
+    # Heating circuit 1. Only the heating curve step (243) can be changed, like every write
+    # only on an explicit user action. Only 243 was compared with the display
+    # (raw 17 = step -2, "2 below the middle"); the others are read as documented.
     Register(
         "room_temperature_setpoint",
         46,
@@ -219,7 +221,6 @@ REGISTERS: tuple[Register, ...] = (
         scale=0.1,
         valid_min=10.0,
         valid_max=35.0,
-        verified=True,
     ),
     Register(
         "heating_hysteresis",
@@ -229,7 +230,6 @@ REGISTERS: tuple[Register, ...] = (
         scale=0.1,
         valid_min=0.5,
         valid_max=5.0,
-        verified=True,
     ),
     Register(
         "heating_curve_offset",
@@ -250,7 +250,6 @@ REGISTERS: tuple[Register, ...] = (
         "Festwertsolltemperatur (HK1)",
         valid_min=18.0,
         valid_max=60.0,
-        verified=True,
     ),
     Register(
         "heating_curve_end_point",
@@ -259,7 +258,6 @@ REGISTERS: tuple[Register, ...] = (
         "Heizkurvenendpunkt (HK1)",
         valid_min=20.0,
         valid_max=70.0,
-        verified=True,
     ),
     # Hot water settings in whole °C / K (254 = 46 while 58 shows 46.0, display 46.0 °C).
     # The write range of the setpoint is the technical one from the Weishaupt manual

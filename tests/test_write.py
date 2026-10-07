@@ -153,11 +153,15 @@ async def test_modes_from_the_options(hass: HomeAssistant, simulator: WpmSimulat
     await hass.config_entries.async_unload(entry.entry_id)
 
 
-async def test_heating_curve_offset(hass, setup_entry, simulator, freezer):
+async def test_heating_curve_offset(
+    hass: HomeAssistant, setup_entry: MockConfigEntry, simulator: WpmSimulator, freezer
+) -> None:
     await set_number(hass, "number.weishaupt_wpm_heating_curve_offset_hk1", -2)
-    assert simulator.get(243) == 17
-
+    assert simulator.get(243) == 17  # display: step -2
     freezer.tick(31)
-
     await set_number(hass, "number.weishaupt_wpm_heating_curve_offset_hk1", 19)
+    assert simulator.get(243) == 38
+    freezer.tick(31)
+    with pytest.raises(ServiceValidationError):
+        await set_number(hass, "number.weishaupt_wpm_heating_curve_offset_hk1", 20)
     assert simulator.get(243) == 38

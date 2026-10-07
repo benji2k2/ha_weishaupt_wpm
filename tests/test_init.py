@@ -12,7 +12,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.weishaupt_wpm.const import DOMAIN
 from custom_components.weishaupt_wpm.diagnostics import async_get_config_entry_diagnostics
 from custom_components.weishaupt_wpm.modbus import ModbusClient
-from custom_components.weishaupt_wpm.registers import Group
+from custom_components.weishaupt_wpm.registers import REGISTERS_BY_KEY, Group
 from tools.simulator import WpmSimulator
 
 from .conftest import entry_for
@@ -175,3 +175,21 @@ async def test_diagnostics(hass: HomeAssistant, setup_entry: MockConfigEntry) ->
     assert diagnostics["unsupported"] == [6, 73, 79]
     assert diagnostics["counters"][0]["value"] == 49_998
     assert diagnostics["writes"] == []
+
+
+async def test_heating_curve_settings(
+    hass: HomeAssistant, setup_entry: MockConfigEntry, simulator: WpmSimulator
+) -> None:
+    coordinator = setup_entry.runtime_data
+    simulator.set(243, 17)  # step -2 at the display
+    simulator.set(47, 20)  # 2.0 K
+    del coordinator._last_read[Group.SETTINGS]
+    await coordinator.async_refresh()
+    assert state(hass, "number.weishaupt_wpm_heating_curve_offset_hk1") == "-2.0"
+    hysteresis = hass.states.get("sensor.weishaupt_wpm_heating_hysteresis")
+    assert hysteresis is not None
+    assert hysteresis.state == "2.0"
+    assert hysteresis.attributes["unit_of_measurement"] == "K"
+    # Only the step is writable; end point and fixed setpoint stay read only.
+    assert REGISTERS_BY_KEY["heating_curve_offset"].writable
+    assert not REGISTERS_BY_KEY["heating_curve_end_point"].writable

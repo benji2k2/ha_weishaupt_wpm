@@ -147,6 +147,27 @@
       "heat_hot_water": {
         "name": "Wärmemenge Warmwasser"
       },
+      "heating_curve_end_point": {
+        "name": "Heizkurvenendpunkt (HK1)"
+      },
+      "heating_curve_fixed_setpoint": {
+        "name": "Festwertsolltemperatur (HK1)"
+      },
+      "heating_curve_offset": {
+        "name": "Heizkurve Verschiebung (Stufe)"
+      },
+      "heating_hysteresis": {
+        "name": "Heizung Hysterese"
+      },
+      "pressure_8": {
+        "name": "Druck (Reg 8)"
+      },
+      "pressure_101": {
+        "name": "Druck (Reg 101)"
+      },
+      "room_temperature_setpoint": {
+        "name": "Raumtemperatur Solltemperatur"
+      },
       "heat_source_inlet_temperature": {
         "name": "Wärmequelle Eintritt"
       },

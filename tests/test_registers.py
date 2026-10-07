@@ -58,8 +58,8 @@ def test_write_ranges() -> None:
 
 def test_blocks_never_bridge_gaps() -> None:
     status = addresses_by_group()[Group.STATUS]
-    assert blocks(status) == [(1, 3), (5, 3), (53, 1), (58, 1), (103, 4)]
-    assert blocks(status, {6}) == [(1, 3), (5, 1), (7, 1), (53, 1), (58, 1), (103, 4)]
+    assert blocks(status) == [(1, 3), (5, 4), (53, 1), (58, 1), (101, 1), (103, 4)]
+    assert blocks(status, {6}) == [(1, 3), (5, 1), (7, 2), (53, 1), (58, 1), (101, 1), (103, 4)]
     counters = addresses_by_group()[Group.COUNTERS]
     assert blocks(counters) == [(71, 9), (303, 6), (334, 3)]
 

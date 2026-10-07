@@ -52,8 +52,8 @@ async def test_one_device_with_all_entities(
     assert (DOMAIN, setup_entry.unique_id) in device.identifiers
     assert device.manufacturer == "Weishaupt"
     entities = er.async_entries_for_device(er.async_get(hass), device.id, True)
-    # 27 sensors (24 registers, 3 heat amounts), 2 binary sensors, 4 numbers, 1 select.
-    assert len(entities) == 34
+    # 34 sensors (31 registers, 3 heat amounts), 2 binary sensors, 4 numbers, 1 select.
+    assert len(entities) == 41
 
 
 async def test_missing_registers_are_left_out(
@@ -69,8 +69,8 @@ async def test_missing_registers_are_left_out(
     assert coordinator.data.raw[7] == 0x10000 - 71
     requests = simulator.requests
     await coordinator.async_refresh()
-    # Status tier only, and no more probing of the missing register: 1-3, 5, 7, 53, 58, 103-106.
-    assert simulator.requests - requests == 6
+    # Status tier only, and no more probing of the missing register: 1-3, 5, 7-8, 53, 58, 101, 103-106.
+    assert simulator.requests - requests == 7
 
 
 async def test_tiers_are_read_at_their_own_pace(

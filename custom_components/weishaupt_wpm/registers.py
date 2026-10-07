@@ -44,6 +44,7 @@ class Register:
     description: str
     data_type: DataType = DataType.UINT16
     scale: float = 1.0
+    offset: float = 0.0
     # Plausibility: decoded values outside are treated as "no value" (missing sensor).
     valid_min: float | None = None
     valid_max: float | None = None
@@ -64,7 +65,11 @@ class Register:
         if self.data_type is DataType.INT16 and raw >= 0x8000:
             value = raw - 0x10000
         if self.scale != 1:
-            value = round(value * self.scale, 3)
+            value = value * self.scale
+        if self.offset != 0:
+            value = value + self.offset
+        if self.scale != 1 or self.offset != 0:
+            value = round(value, 3)
         if self.valid_min is not None and value < self.valid_min:
             return None
         if self.valid_max is not None and value > self.valid_max:
@@ -73,6 +78,7 @@ class Register:
 
     def encode(self, value: float) -> int:
         """Raw register value for a scaled value."""
+        value = value - self.offset
         raw = round(value / self.scale)
         if self.data_type is DataType.INT16:
             if not -0x8000 <= raw <= 0x7FFF:
@@ -154,6 +160,22 @@ REGISTERS: tuple[Register, ...] = (
         verified=True,
     ),
     _temperature("hot_water_setpoint_active", 58, "Temperatur Warmwassersoll", verified=True),
+    Register(
+        "pressure_8",
+        8,
+        Group.STATUS,
+        "Druck (Reg 8)",
+        scale=0.1,
+        optional=True,
+    ),
+    Register(
+        "pressure_101",
+        101,
+        Group.STATUS,
+        "Druck (Reg 101)",
+        scale=0.1,
+        optional=True,
+    ),
     # System status (codes, see tables below)
     Register("status", 103, Group.STATUS, "Statusmeldungen"),
     Register("lock", 104, Group.STATUS, "Sperrmeldungen"),
@@ -187,6 +209,55 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=150,
         write_min=0,
         write_max=150,
+    ),
+    # Heating curve / Room temperature settings (HK1)
+    Register(
+        "room_temperature_setpoint",
+        46,
+        Group.SETTINGS,
+        "Raumtemperatur Solltemperatur",
+        scale=0.1,
+        valid_min=10.0,
+        valid_max=35.0,
+        verified=True,
+    ),
+    Register(
+        "heating_hysteresis",
+        47,
+        Group.SETTINGS,
+        "Heizung Hysterese",
+        scale=0.1,
+        valid_min=0.5,
+        valid_max=5.0,
+        verified=True,
+    ),
+    Register(
+        "heating_curve_offset",
+        243,
+        Group.SETTINGS,
+        "Heizkurve Verschiebung (Stufe)",
+        offset=-19.0,
+        valid_min=-19.0,
+        valid_max=19.0,
+        verified=True,
+    ),
+    Register(
+        "heating_curve_fixed_setpoint",
+        244,
+        Group.SETTINGS,
+        "Festwertsolltemperatur (HK1)",
+        valid_min=18.0,
+        valid_max=60.0,
+        verified=True,
+    ),
+    Register(
+        "heating_curve_end_point",
+        245,
+        Group.SETTINGS,
+        "Heizkurvenendpunkt (HK1)",
+        valid_min=20.0,
+        valid_max=70.0,
+        verified=True,
     ),
     # Hot water settings in whole °C / K (254 = 46 while 58 shows 46.0, display 46.0 °C).
     # The write range of the setpoint is the technical one from the Weishaupt manual

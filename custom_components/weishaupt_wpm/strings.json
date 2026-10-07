@@ -147,6 +147,27 @@
       "heat_hot_water": {
         "name": "Heat for hot water"
       },
+      "heating_curve_end_point": {
+        "name": "Heating curve end point (HK1)"
+      },
+      "heating_curve_fixed_setpoint": {
+        "name": "Heating curve fixed setpoint (HK1)"
+      },
+      "heating_curve_offset": {
+        "name": "Heating curve offset (HK1)"
+      },
+      "heating_hysteresis": {
+        "name": "Heating hysteresis"
+      },
+      "pressure_8": {
+        "name": "Pressure (Register 8)"
+      },
+      "pressure_101": {
+        "name": "Pressure (Register 101)"
+      },
+      "room_temperature_setpoint": {
+        "name": "Room temperature setpoint"
+      },
       "heat_source_inlet_temperature": {
         "name": "Heat source inlet"
       },

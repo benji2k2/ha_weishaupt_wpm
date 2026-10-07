@@ -104,7 +104,9 @@ class Counter:
         return high * 100_000_000 + mid * 10_000 + low
 
 
-def _temperature(key: str, address: int, description: str, *, optional: bool = False) -> Register:
+def _temperature(
+    key: str, address: int, description: str, *, optional: bool = False, verified: bool = False
+) -> Register:
     return Register(
         key,
         address,
@@ -115,18 +117,26 @@ def _temperature(key: str, address: int, description: str, *, optional: bool = F
         valid_min=-50.0,
         valid_max=100.0,
         optional=optional,
+        verified=verified,
     )
 
 
-def _runtime(key: str, address: int, description: str, *, optional: bool = False) -> Register:
-    return Register(key, address, Group.COUNTERS, description, optional=optional)
+def _runtime(
+    key: str, address: int, description: str, *, optional: bool = False, verified: bool = False
+) -> Register:
+    return Register(key, address, Group.COUNTERS, description, optional=optional, verified=verified)
 
 
 REGISTERS: tuple[Register, ...] = (
     # Operating data (0.1 °C)
     _temperature("outdoor_temperature", 1, "Außentemperatur (R1)"),
-    _temperature("return_temperature", 2, "Temperatur Rücklauf (R2)"),
-    _temperature("hot_water_temperature", 3, "Temperatur Warmwasser (R3)"),
+    _temperature(
+        "return_temperature",
+        2,
+        "Temperatur Rücklauf (R2), am Display „Heizkreis 1 Ist“",
+        verified=True,
+    ),
+    _temperature("hot_water_temperature", 3, "Temperatur Warmwasser (R3)", verified=True),
     _temperature("flow_temperature", 5, "Temperatur Vorlauf (R9)"),
     _temperature(
         "heat_source_inlet_temperature",
@@ -134,9 +144,16 @@ REGISTERS: tuple[Register, ...] = (
         "Temperatur Wärmequelleneintritt (R24), nur mit elektronischem Expansionsventil",
         optional=True,
     ),
-    _temperature("heat_source_outlet_temperature", 7, "Temperatur Wärmequellenaustritt (R6)"),
-    _temperature("return_setpoint", 53, "Temperatur Rücklaufsoll"),
-    _temperature("hot_water_setpoint_active", 58, "Temperatur Warmwassersoll"),
+    _temperature(
+        "heat_source_outlet_temperature", 7, "Temperatur Wärmequellenaustritt (R6)", optional=True
+    ),
+    _temperature(
+        "return_setpoint",
+        53,
+        "Temperatur Rücklaufsoll, am Display „Heizkreis 1 Soll“",
+        verified=True,
+    ),
+    _temperature("hot_water_setpoint_active", 58, "Temperatur Warmwassersoll", verified=True),
     # System status (codes, see tables below)
     Register("status", 103, Group.STATUS, "Statusmeldungen"),
     Register("lock", 104, Group.STATUS, "Sperrmeldungen"),
@@ -171,7 +188,7 @@ REGISTERS: tuple[Register, ...] = (
         write_min=0,
         write_max=150,
     ),
-    # Hot water settings (whole °C / K according to the documentation, to be verified).
+    # Hot water settings in whole °C / K (254 = 46 while 58 shows 46.0, display 46.0 °C).
     # The write range of the setpoint is the technical one from the Weishaupt manual
     # (30...85 °C); the integration's options narrow it (default 40...60 °C).
     Register(
@@ -193,6 +210,7 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=85,
         write_min=30,
         write_max=85,
+        verified=True,
     ),
     Register(
         "hot_water_setpoint_max",
@@ -212,21 +230,23 @@ REGISTERS: tuple[Register, ...] = (
         optional=True,
     ),
     # Runtimes (hours)
-    _runtime("runtime_aux_pump", 71, "Laufzeit Zusatzumwälzpumpe (M16)", optional=True),
-    _runtime("runtime_compressor_1", 72, "Laufzeit Verdichter 1"),
+    _runtime(
+        "runtime_aux_pump", 71, "Laufzeit Zusatzumwälzpumpe (M16)", optional=True, verified=True
+    ),
+    _runtime("runtime_compressor_1", 72, "Laufzeit Verdichter 1", verified=True),
     _runtime("runtime_compressor_2", 73, "Laufzeit Verdichter 2", optional=True),
-    _runtime("runtime_primary_pump", 74, "Laufzeit Primärpumpe / Ventilator (M11)"),
-    _runtime("runtime_second_heat_generator", 75, "Laufzeit 2. Wärmeerzeuger (E10)"),
-    _runtime("runtime_heating_pump", 76, "Laufzeit Heizungspumpe (M13)"),
-    _runtime("runtime_hot_water_pump", 77, "Laufzeit Warmwasserpumpe (M18)"),
-    _runtime("runtime_flange_heater", 78, "Laufzeit Flanschheizung (E9)"),
+    _runtime("runtime_primary_pump", 74, "Laufzeit Primärpumpe / Ventilator (M11)", verified=True),
+    _runtime("runtime_second_heat_generator", 75, "Laufzeit 2. Wärmeerzeuger (E10)", verified=True),
+    _runtime("runtime_heating_pump", 76, "Laufzeit Heizungspumpe (M13)", verified=True),
+    _runtime("runtime_hot_water_pump", 77, "Laufzeit Warmwasserpumpe (M18)", verified=True),
+    _runtime("runtime_flange_heater", 78, "Laufzeit Flanschheizung (E9)", verified=True),
     _runtime("runtime_pool_pump", 79, "Laufzeit Schwimmbadpumpe (M19)", optional=True),
 )
 
 COUNTERS: tuple[Counter, ...] = (
-    Counter("heat_heating", 303, 304, 305, "Wärmemenge Heizen"),
-    Counter("heat_hot_water", 306, 307, 308, "Wärmemenge Warmwasser"),
-    Counter("environmental_energy", 334, 335, 336, "Umweltenergie"),
+    Counter("heat_heating", 303, 304, 305, "Wärmemenge Heizen", verified=True),
+    Counter("heat_hot_water", 306, 307, 308, "Wärmemenge Warmwasser", verified=True),
+    Counter("environmental_energy", 334, 335, 336, "Umweltenergie", verified=True),
 )
 
 REGISTERS_BY_KEY: dict[str, Register] = {register.key: register for register in REGISTERS}
@@ -249,8 +269,9 @@ def blocks(
 ) -> list[tuple[int, int]]:
     """Contiguous (start, count) runs, leaving out ``skip``.
 
-    Only strictly neighbouring registers are combined: the pCO answers a read that
-    touches an unused address with an exception, so gaps are never bridged.
+    Only strictly neighbouring registers are combined, gaps are never bridged. The
+    WPM 5.0M (L23.2) answers unused addresses with 0, but the Dimplex documentation
+    allows an exception there, and a block containing one would fail as a whole.
     """
     runs: list[tuple[int, int]] = []
     for address in sorted(set(addresses) - set(skip)):

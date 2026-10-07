@@ -65,8 +65,8 @@ async def test_missing_registers_are_left_out(
     registry = er.async_get(hass)
     inlet = registry.async_get("sensor.weishaupt_wpm_heat_source_inlet")
     assert inlet is not None and inlet.disabled_by is er.RegistryEntryDisabler.INTEGRATION
-    # Neighbours of a missing register are still read.
-    assert state(hass, "sensor.weishaupt_wpm_heat_source_outlet") == "-7.1"
+    # Neighbours of a missing register are still read (7 is optional, so check the raw value).
+    assert coordinator.data.raw[7] == 0x10000 - 71
     requests = simulator.requests
     await coordinator.async_refresh()
     # Status tier only, and no more probing of the missing register: 1-3, 5, 7, 53, 58, 103-106.

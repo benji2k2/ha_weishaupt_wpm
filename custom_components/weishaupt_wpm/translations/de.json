@@ -56,7 +56,8 @@
           "address_offset": "Adress-Offset",
           "hot_water_min": "Warmwasser-Soll: niedrigster Wert",
           "hot_water_max": "Warmwasser-Soll: höchster Wert",
-          "operating_modes": "Angebotene Betriebsmodi"
+          "operating_modes": "Angebotene Betriebsmodi",
+          "writable": "In Home Assistant änderbar"
         },
         "data_description": {
           "status_interval": "Wie oft Temperaturen und Status gelesen werden.",
@@ -65,7 +66,8 @@
           "address_offset": "0, außer tools/probe.py hat gezeigt, dass die Außentemperatur ein Register tiefer liegt.",
           "hot_water_min": "Niedrigster Warmwasser-Sollwert, der sich aus Home Assistant einstellen lässt (technisch 30 bis 85 °C).",
           "hot_water_max": "Höchster Warmwasser-Sollwert, der sich aus Home Assistant einstellen lässt.",
-          "operating_modes": "Modi, die die Auswahl Betriebsmodus anbietet. 2. Wärmeerzeuger heizt nur mit dem Heizstab; Kühlen braucht eine dafür ausgelegte Anlage."
+          "operating_modes": "Modi, die die Auswahl Betriebsmodus anbietet. 2. Wärmeerzeuger heizt nur mit dem Heizstab; Kühlen braucht eine dafür ausgelegte Anlage.",
+          "writable": "Nur Angehaktes lässt sich in Home Assistant ändern, alles andere wird nur angezeigt. Jedes Schreiben landet im nichtflüchtigen Speicher des Reglers – nur anhaken, was du wirklich von hier aus änderst."
         }
       }
     },
@@ -96,6 +98,23 @@
         "0": "0 (wie dokumentiert)",
         "minus_1": "-1 (alle Register eins tiefer)"
       }
+    },
+    "writable": {
+      "options": {
+        "clock": "Uhr des Reglers (Knopf)",
+        "operating_mode": "Betriebsmodus",
+        "heating_curve_offset": "Heizkurven-Stufe",
+        "holiday_days": "Urlaubstage",
+        "party_hours": "Partystunden",
+        "hot_water_setpoint": "Warmwasser-Solltemperatur",
+        "hot_water_hysteresis": "Warmwasser-Hysterese",
+        "hot_water_setpoint_max": "Warmwasser-Maximaltemperatur",
+        "hot_water_setpoint_min": "Warmwasser-Minimaltemperatur",
+        "heating_hysteresis": "Hysterese Heizkreis",
+        "heating_curve_end_point": "Heizkurvenendpunkt",
+        "heating_curve_fixed_setpoint": "Festwertsolltemperatur",
+        "room_temperature_setpoint": "Raumsolltemperatur"
+      }
     }
   },
   "entity": {
@@ -113,20 +132,38 @@
       }
     },
     "number": {
-      "hot_water_setpoint": {
-        "name": "Warmwasser-Solltemperatur"
+      "heating_curve_end_point": {
+        "name": "Heizkurvenendpunkt (HK1)"
       },
-      "hot_water_hysteresis": {
-        "name": "Warmwasser-Hysterese"
-      },
-      "party_hours": {
-        "name": "Partystunden"
+      "heating_curve_fixed_setpoint": {
+        "name": "Festwertsolltemperatur (HK1)"
       },
       "heating_curve_offset": {
         "name": "Heizkurve Verschiebung (HK1)"
       },
+      "heating_hysteresis": {
+        "name": "Heizung Hysterese"
+      },
       "holiday_days": {
         "name": "Urlaubstage"
+      },
+      "hot_water_hysteresis": {
+        "name": "Warmwasser-Hysterese"
+      },
+      "hot_water_setpoint": {
+        "name": "Warmwasser-Solltemperatur"
+      },
+      "hot_water_setpoint_max": {
+        "name": "Warmwasser-Solltemperatur maximal"
+      },
+      "hot_water_setpoint_min": {
+        "name": "Warmwasser-Solltemperatur minimal"
+      },
+      "party_hours": {
+        "name": "Partystunden"
+      },
+      "room_temperature_setpoint": {
+        "name": "Raumtemperatur Solltemperatur"
       }
     },
     "select": {
@@ -205,8 +242,20 @@
       "heating_curve_fixed_setpoint": {
         "name": "Festwertsolltemperatur (HK1)"
       },
+      "heating_curve_offset": {
+        "name": "Heizkurve Verschiebung (HK1)"
+      },
       "heating_hysteresis": {
         "name": "Heizung Hysterese"
+      },
+      "holiday_days": {
+        "name": "Urlaubstage"
+      },
+      "hot_water_hysteresis": {
+        "name": "Warmwasser-Hysterese"
+      },
+      "hot_water_setpoint": {
+        "name": "Warmwasser-Solltemperatur"
       },
       "hot_water_setpoint_active": {
         "name": "Warmwasser-Solltemperatur aktiv"
@@ -277,6 +326,9 @@
       },
       "outdoor_temperature": {
         "name": "Außentemperatur"
+      },
+      "party_hours": {
+        "name": "Partystunden"
       },
       "pressure_101": {
         "name": "Druck (Reg 101)"

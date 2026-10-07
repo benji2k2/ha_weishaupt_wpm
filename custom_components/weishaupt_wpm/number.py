@@ -1,4 +1,4 @@
-"""Hot water setpoint and hysteresis, party hours and holiday days.
+"""Settings the options made writable (none after setup).
 
 Every change goes through WpmCoordinator.async_write: range check, no write for an
 unchanged value, at most one write per register within WRITE_MIN_INTERVAL.
@@ -53,6 +53,52 @@ NUMBERS: tuple[NumberEntityDescription, ...] = (
         native_step=1,
         mode=NumberMode.SLIDER,
     ),
+    NumberEntityDescription(
+        key="hot_water_setpoint_max",
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        native_step=1,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    NumberEntityDescription(
+        key="hot_water_setpoint_min",
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        native_step=1,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    NumberEntityDescription(
+        key="heating_hysteresis",
+        native_unit_of_measurement=UnitOfTemperature.KELVIN,
+        native_step=0.1,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    NumberEntityDescription(
+        key="heating_curve_end_point",
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        native_step=1,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    NumberEntityDescription(
+        key="heating_curve_fixed_setpoint",
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        native_step=1,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    NumberEntityDescription(
+        key="room_temperature_setpoint",
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        native_step=0.1,
+        mode=NumberMode.BOX,
+    ),
 )
 
 
@@ -63,7 +109,11 @@ async def async_setup_entry(
 ) -> None:
     """Add the adjustable settings."""
     coordinator = entry.runtime_data
-    async_add_entities(WpmNumber(coordinator, description) for description in NUMBERS)
+    async_add_entities(
+        WpmNumber(coordinator, description)
+        for description in NUMBERS
+        if description.key in coordinator.writable
+    )
 
 
 class WpmNumber(WpmRegisterEntity, NumberEntity):

@@ -71,6 +71,13 @@ for again; their entities are unavailable.
 
 ## ⚠️ Writing: on request only
 
+After setup **nothing is writable**. The options list what may be changed from
+Home Assistant: controller clock, operating mode, heating curve step, holiday days,
+party hours, hot water setpoint, hysteresis, maximum and minimum, heating circuit
+hysteresis, heating curve end point, fixed setpoint and room temperature setpoint.
+A ticked value gets a number (or select, or the clock button), an unticked one is
+only a sensor, and the integration refuses to write it.
+
 Settings are stored in the controller's **non-volatile memory**, which wears
 with constant writing. The integration protects it:
 

@@ -5,14 +5,15 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.weishaupt_wpm.const import DOMAIN
+from custom_components.weishaupt_wpm.const import CONF_WRITABLE, DOMAIN
 from custom_components.weishaupt_wpm.diagnostics import async_get_config_entry_diagnostics
 from custom_components.weishaupt_wpm.modbus import ModbusClient
-from custom_components.weishaupt_wpm.registers import REGISTERS_BY_KEY, Group
+from custom_components.weishaupt_wpm.registers import Group
 from tools.simulator import WpmSimulator
 
 from .conftest import entry_for
@@ -178,10 +179,12 @@ async def test_diagnostics(hass: HomeAssistant, setup_entry: MockConfigEntry) ->
     assert diagnostics["writes"] == []
 
 
-async def test_heating_curve_settings(
-    hass: HomeAssistant, setup_entry: MockConfigEntry, simulator: WpmSimulator
-) -> None:
-    coordinator = setup_entry.runtime_data
+async def test_heating_curve_settings(hass: HomeAssistant, simulator: WpmSimulator) -> None:
+    entry = entry_for(simulator, **{CONF_WRITABLE: ["heating_curve_offset"]})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    coordinator = entry.runtime_data
     simulator.set(243, 17)  # step -2 at the display
     simulator.set(47, 20)  # 2.0 K
     del coordinator._last_read[Group.SETTINGS]
@@ -191,6 +194,43 @@ async def test_heating_curve_settings(
     assert hysteresis is not None
     assert hysteresis.state == "2.0"
     assert hysteresis.attributes["unit_of_measurement"] == "K"
-    # Only the step is writable; end point and fixed setpoint stay read only.
-    assert REGISTERS_BY_KEY["heating_curve_offset"].writable
-    assert not REGISTERS_BY_KEY["heating_curve_end_point"].writable
+    # Not ticked: shown as sensors only.
+    assert hass.states.get("number.weishaupt_wpm_heating_hysteresis") is None
+    assert hass.states.get("sensor.weishaupt_wpm_heating_curve_end_point_hk1") is not None
+    await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_nothing_writable_by_default(hass: HomeAssistant, simulator: WpmSimulator) -> None:
+    entry = entry_for(simulator, **{CONF_WRITABLE: []})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert not hass.states.async_entity_ids(["number", "select", "button"])
+    assert state(hass, "sensor.weishaupt_wpm_hot_water_setpoint") is not None
+    assert state(hass, "sensor.weishaupt_wpm_party_hours") is not None
+    coordinator = entry.runtime_data
+    with pytest.raises(ServiceValidationError):
+        await coordinator.async_write("hot_water_setpoint", 50)
+    with pytest.raises(ServiceValidationError):
+        await coordinator.async_set_clock()
+    assert simulator.writes == []
+    await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_switching_to_read_only_removes_the_old_entities(
+    hass: HomeAssistant, simulator: WpmSimulator
+) -> None:
+    entry = entry_for(simulator)  # everything writable
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    registry = er.async_get(hass)
+    assert registry.async_get("number.weishaupt_wpm_hot_water_setpoint") is not None
+    hass.config_entries.async_update_entry(entry, options={CONF_WRITABLE: []})
+    await hass.async_block_till_done()  # the options listener reloads the entry
+    assert registry.async_get("number.weishaupt_wpm_hot_water_setpoint") is None
+    assert registry.async_get("button.weishaupt_wpm_set_controller_clock") is None
+    assert registry.async_get("select.weishaupt_wpm_operating_mode") is None
+    assert state(hass, "sensor.weishaupt_wpm_hot_water_setpoint") is not None
+    assert state(hass, "sensor.weishaupt_wpm_active_operating_mode") is not None
+    await hass.config_entries.async_unload(entry.entry_id)

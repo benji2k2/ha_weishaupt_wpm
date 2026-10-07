@@ -13,6 +13,27 @@ CONF_ADDRESS_OFFSET = "address_offset"
 CONF_HOT_WATER_MIN = "hot_water_min"
 CONF_HOT_WATER_MAX = "hot_water_max"
 CONF_OPERATING_MODES = "operating_modes"
+CONF_WRITABLE = "writable"
+
+# What the options can make writable, in the order shown. "clock" is the button that
+# sets the controller's date and time, the others are register keys. Nothing is
+# writable after setup: each one is enabled on purpose.
+WRITABLE_CHOICES: tuple[str, ...] = (
+    "clock",
+    "operating_mode",
+    "heating_curve_offset",
+    "holiday_days",
+    "party_hours",
+    "hot_water_setpoint",
+    "hot_water_hysteresis",
+    "hot_water_setpoint_max",
+    "hot_water_setpoint_min",
+    "heating_hysteresis",
+    "heating_curve_end_point",
+    "heating_curve_fixed_setpoint",
+    "room_temperature_setpoint",
+)
+DEFAULT_WRITABLE: tuple[str, ...] = ()
 
 DEFAULT_PORT = 502
 DEFAULT_UNIT = 1

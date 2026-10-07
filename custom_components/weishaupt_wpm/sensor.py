@@ -111,6 +111,23 @@ REGISTER_SENSORS: tuple[WpmSensorDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
     ),
+    # Settings that only become sensors when the options do not make them writable
+    # (for the others above, the number entity shows the value instead).
+    _temperature("hot_water_setpoint", measured=False),
+    WpmSensorDescription(
+        key="hot_water_hysteresis", native_unit_of_measurement=UnitOfTemperature.KELVIN
+    ),
+    WpmSensorDescription(key="heating_curve_offset", suggested_display_precision=0),
+    WpmSensorDescription(
+        key="party_hours",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+    ),
+    WpmSensorDescription(
+        key="holiday_days",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.DAYS,
+    ),
     _codes("status", STATUS_CODES),
     _codes("lock", LOCK_CODES),
     _codes("fault", FAULT_CODES),
@@ -148,7 +165,14 @@ async def async_setup_entry(
     coordinator = entry.runtime_data
     async_add_entities(
         [
-            *(WpmRegisterSensor(coordinator, description) for description in REGISTER_SENSORS),
+            *(
+                WpmRegisterSensor(coordinator, description)
+                for description in REGISTER_SENSORS
+                # A writable setting is shown by its number entity; the active
+                # operating mode stays a sensor (it also shows modes not offered).
+                if description.key == "operating_mode"
+                or description.key not in coordinator.writable
+            ),
             *(WpmCounterSensor(coordinator, description) for description in COUNTER_SENSORS),
             WpmWriteCountSensor(coordinator),
             WpmClockDeviationSensor(coordinator),

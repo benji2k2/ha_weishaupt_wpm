@@ -21,8 +21,9 @@ async def async_setup_entry(
     entry: WpmConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Add the operating mode select."""
-    async_add_entities([WpmOperatingModeSelect(entry.runtime_data)])
+    """Add the operating mode select, if the options made the mode writable."""
+    if "operating_mode" in entry.runtime_data.writable:
+        async_add_entities([WpmOperatingModeSelect(entry.runtime_data)])
 
 
 class WpmOperatingModeSelect(WpmRegisterEntity, SelectEntity):

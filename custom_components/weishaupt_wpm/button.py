@@ -16,8 +16,9 @@ async def async_setup_entry(
     entry: WpmConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Add the clock button."""
-    async_add_entities([WpmSetClockButton(entry.runtime_data)])
+    """Add the clock button, if the options allow setting the clock."""
+    if "clock" in entry.runtime_data.writable:
+        async_add_entities([WpmSetClockButton(entry.runtime_data)])
 
 
 class WpmSetClockButton(WpmEntity, ButtonEntity):

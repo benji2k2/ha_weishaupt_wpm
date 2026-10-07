@@ -24,6 +24,7 @@ from .const import (
     CONF_OPERATING_MODES,
     CONF_SETTINGS_INTERVAL,
     CONF_STATUS_INTERVAL,
+    CONF_WRITABLE,
     COUNTER_GLITCH,
     DEFAULT_ADDRESS_OFFSET,
     DEFAULT_COUNTER_INTERVAL,
@@ -31,6 +32,7 @@ from .const import (
     DEFAULT_HOT_WATER_MIN,
     DEFAULT_SETTINGS_INTERVAL,
     DEFAULT_STATUS_INTERVAL,
+    DEFAULT_WRITABLE,
     DOMAIN,
     WRITE_MIN_INTERVAL,
 )
@@ -103,6 +105,8 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
         self.operating_modes: tuple[int, ...] = tuple(
             code for code, key in OPERATING_MODES.items() if key in allowed
         )
+        # What the options allow to be written ("clock" or register keys).
+        self.writable: frozenset[str] = frozenset(options.get(CONF_WRITABLE, DEFAULT_WRITABLE))
         self.unsupported: set[int] = set()
         self.group_addresses = addresses_by_group()
         self.write_log: deque[dict[str, Any]] = deque(maxlen=20)
@@ -224,6 +228,12 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
         clock is read back afterwards. The controller keeps no seconds, so after the
         half minute the write waits for the next full minute.
         """
+        if "clock" not in self.writable:
+            raise ServiceValidationError(
+                translation_domain=DOMAIN,
+                translation_key="not_writable",
+                translation_placeholders={"key": "clock"},
+            )
         now_mono = time.monotonic()
         last = self._last_write.get("clock")
         if last is not None and now_mono - last < WRITE_MIN_INTERVAL:
@@ -331,7 +341,7 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
         WRITE_MIN_INTERVAL seconds. The register is read back afterwards.
         """
         register = REGISTERS_BY_KEY[key]
-        if not register.writable:
+        if not register.writable or key not in self.writable:
             raise ServiceValidationError(
                 translation_domain=DOMAIN,
                 translation_key="not_writable",

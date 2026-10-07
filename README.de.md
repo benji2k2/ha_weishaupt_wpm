@@ -73,6 +73,14 @@ verfügbar.
 
 ## ⚠️ Schreiben: nur auf Knopfdruck
 
+Nach der Einrichtung ist **nichts schreibbar**. In den Optionen legst du fest,
+was sich in Home Assistant ändern lässt: Uhr des Reglers, Betriebsmodus,
+Heizkurven-Stufe, Urlaubstage, Partystunden, Warmwasser-Soll, -Hysterese, -Maximum
+und -Minimum, Hysterese Heizkreis, Heizkurvenendpunkt, Festwert- und
+Raumsolltemperatur. Angehakte Werte bekommen einen Regler (bzw. die Auswahl oder den
+Uhr-Knopf), nicht angehakte sind nur Sensoren, und die Integration verweigert das
+Schreiben.
+
 Einstellungen landen im **nichtflüchtigen Speicher** des Reglers. Ständiges
 Schreiben kann ihn verschleißen. Die Integration schützt sich selbst:
 

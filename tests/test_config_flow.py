@@ -21,6 +21,7 @@ from custom_components.weishaupt_wpm.const import (
     CONF_STATUS_INTERVAL,
     CONF_TRANSPORT,
     CONF_UNIT,
+    CONF_WRITABLE,
     DOMAIN,
 )
 from custom_components.weishaupt_wpm.modbus import ModbusClient
@@ -152,6 +153,7 @@ OPTIONS_INPUT = {
     CONF_HOT_WATER_MAX: 55.0,
     CONF_OPERATING_MODES: ["cooling", "summer", "winter"],
     CONF_ADDRESS_OFFSET: "minus_1",
+    CONF_WRITABLE: ["party_hours", "clock", "operating_mode"],
 }
 
 
@@ -171,7 +173,21 @@ async def test_options_flow(hass: HomeAssistant, simulator: WpmSimulator) -> Non
         # Stored in the controller's order, whatever order they were ticked in.
         CONF_OPERATING_MODES: ["summer", "winter", "cooling"],
         CONF_ADDRESS_OFFSET: -1,
+        # Also in the fixed order of the choices.
+        CONF_WRITABLE: ["clock", "operating_mode", "party_hours"],
     }
+
+
+async def test_options_default_to_nothing_writable(
+    hass: HomeAssistant, simulator: WpmSimulator
+) -> None:
+    entry = entry_for(simulator)
+    entry.add_to_hass(hass)
+    hass.config_entries.async_update_entry(entry, options={})  # fresh setup: no options yet
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    schema = result["data_schema"].schema
+    default = next(key for key in schema if key == CONF_WRITABLE).default()
+    assert default == []
 
 
 @pytest.mark.parametrize(
@@ -200,4 +216,4 @@ async def test_options_are_checked(
     )
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {field: error}
-    assert entry.options == {}
+    assert CONF_OPERATING_MODES not in entry.options  # nothing stored

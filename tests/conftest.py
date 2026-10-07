@@ -10,7 +10,13 @@ from homeassistant.core import HomeAssistant
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.weishaupt_wpm.const import CONF_TRANSPORT, CONF_UNIT, DOMAIN
+from custom_components.weishaupt_wpm.const import (
+    CONF_TRANSPORT,
+    CONF_UNIT,
+    CONF_WRITABLE,
+    DOMAIN,
+    WRITABLE_CHOICES,
+)
 from custom_components.weishaupt_wpm.modbus import ModbusClient
 from tools.simulator import WpmSimulator
 
@@ -45,6 +51,8 @@ async def simulator() -> AsyncIterator[WpmSimulator]:
 
 
 def entry_for(simulator: WpmSimulator, **options: object) -> MockConfigEntry:
+    """A config entry for the simulator; everything writable unless the test says otherwise."""
+    options.setdefault(CONF_WRITABLE, list(WRITABLE_CHOICES))
     port = simulator._server.sockets[0].getsockname()[1]
     return MockConfigEntry(
         domain=DOMAIN,

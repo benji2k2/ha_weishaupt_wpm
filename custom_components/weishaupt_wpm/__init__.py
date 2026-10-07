@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 
-from .const import CONF_TRANSPORT, CONF_UNIT
+from .const import CONF_TRANSPORT, CONF_UNIT, WRITABLE_CHOICES
 from .coordinator import WpmConfigEntry, WpmCoordinator
 from .modbus import ModbusClient
 
@@ -33,6 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: WpmConfigEntry) -> bool:
         await client.close()
         raise
     entry.runtime_data = coordinator
+    _remove_entities_of_the_other_kind(hass, entry, coordinator)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
@@ -50,3 +52,32 @@ async def async_unload_entry(hass: HomeAssistant, entry: WpmConfigEntry) -> bool
     if unloaded:
         await entry.runtime_data.client.close()
     return unloaded
+
+
+def _remove_entities_of_the_other_kind(
+    hass: HomeAssistant, entry: WpmConfigEntry, coordinator: WpmCoordinator
+) -> None:
+    """After the writable settings changed, drop what now belongs to another platform.
+
+    A writable setting is a number (or the select, or the clock button), a read-only
+    one a sensor. Without this, the registry would keep the old entity as orphan.
+    """
+    registry = er.async_get(hass)
+    prefix = f"{coordinator.device_identifier}_"
+    for entity in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if not entity.unique_id.startswith(prefix):
+            continue
+        key = entity.unique_id[len(prefix) :]
+        if key == "set_clock":  # the button's key
+            key = "clock"
+        if key not in WRITABLE_CHOICES:
+            continue
+        writable = key in coordinator.writable
+        if entity.domain in ("number", "select", "button"):
+            stale = not writable
+        elif entity.domain == "sensor":
+            stale = writable and key != "operating_mode"
+        else:
+            stale = False
+        if stale:
+            registry.async_remove(entity.entity_id)

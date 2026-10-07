@@ -225,6 +225,8 @@ REGISTERS: tuple[Register, ...] = (
         scale=0.1,
         valid_min=10.0,
         valid_max=35.0,
+        write_min=15.0,
+        write_max=30.0,
     ),
     Register(
         "heating_hysteresis",
@@ -234,6 +236,8 @@ REGISTERS: tuple[Register, ...] = (
         scale=0.1,
         valid_min=0.5,
         valid_max=5.0,
+        write_min=0.5,
+        write_max=5.0,
         verified=True,
     ),
     Register(
@@ -255,6 +259,8 @@ REGISTERS: tuple[Register, ...] = (
         "Festwertsolltemperatur (HK1)",
         valid_min=18.0,
         valid_max=60.0,
+        write_min=18.0,
+        write_max=60.0,
     ),
     Register(
         "heating_curve_end_point",
@@ -263,6 +269,8 @@ REGISTERS: tuple[Register, ...] = (
         "Heizkurvenendpunkt (HK1)",
         valid_min=20.0,
         valid_max=70.0,
+        write_min=20.0,
+        write_max=70.0,
         verified=True,
     ),
     # Hot water settings in whole °C / K (254 = 46 while 58 shows 46.0, display 46.0 °C).
@@ -297,6 +305,8 @@ REGISTERS: tuple[Register, ...] = (
         "Warmwasser Solltemperatur Maximal",
         valid_min=10,
         valid_max=85,
+        write_min=10,
+        write_max=85,
         verified=True,
     ),
     Register(
@@ -307,6 +317,8 @@ REGISTERS: tuple[Register, ...] = (
         valid_min=10,
         valid_max=85,
         optional=True,
+        write_min=10,
+        write_max=85,
     ),
     # Runtimes (hours)
     _runtime(

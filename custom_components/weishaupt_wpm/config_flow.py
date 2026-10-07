@@ -34,6 +34,7 @@ from .const import (
     CONF_STATUS_INTERVAL,
     CONF_TRANSPORT,
     CONF_UNIT,
+    CONF_WRITABLE,
     DEFAULT_ADDRESS_OFFSET,
     DEFAULT_COUNTER_INTERVAL,
     DEFAULT_HOT_WATER_MAX,
@@ -42,11 +43,13 @@ from .const import (
     DEFAULT_SETTINGS_INTERVAL,
     DEFAULT_STATUS_INTERVAL,
     DEFAULT_UNIT,
+    DEFAULT_WRITABLE,
     DOMAIN,
     MAX_SLOW_INTERVAL,
     MAX_STATUS_INTERVAL,
     MIN_SLOW_INTERVAL,
     MIN_STATUS_INTERVAL,
+    WRITABLE_CHOICES,
 )
 from .modbus import (
     TRANSPORT_RTU_OVER_TCP,
@@ -195,7 +198,7 @@ class WpmConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class WpmOptionsFlow(OptionsFlow):
-    """Polling intervals, address offset, hot water range and offered operating modes."""
+    """Polling, address offset, what may be written, hot water range and offered modes."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         errors: dict[str, str] = {}
@@ -209,6 +212,9 @@ class WpmOptionsFlow(OptionsFlow):
                 CONF_HOT_WATER_MIN: int(user_input[CONF_HOT_WATER_MIN]),
                 CONF_HOT_WATER_MAX: int(user_input[CONF_HOT_WATER_MAX]),
                 CONF_OPERATING_MODES: [key for key in OPERATING_MODES.values() if key in chosen],
+                CONF_WRITABLE: [
+                    key for key in WRITABLE_CHOICES if key in user_input.get(CONF_WRITABLE, [])
+                ],
             }
             if data[CONF_HOT_WATER_MIN] > data[CONF_HOT_WATER_MAX]:
                 errors[CONF_HOT_WATER_MAX] = "hot_water_range"
@@ -262,6 +268,16 @@ def _options_schema(current: dict[str, Any]) -> vol.Schema:
                     multiple=True,
                     mode=SelectSelectorMode.LIST,
                     translation_key=CONF_OPERATING_MODES,
+                )
+            ),
+            vol.Optional(
+                CONF_WRITABLE, default=list(current.get(CONF_WRITABLE, DEFAULT_WRITABLE))
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=list(WRITABLE_CHOICES),
+                    multiple=True,
+                    mode=SelectSelectorMode.LIST,
+                    translation_key=CONF_WRITABLE,
                 )
             ),
             vol.Required(CONF_ADDRESS_OFFSET, default=offset): SelectSelector(

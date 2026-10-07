@@ -56,7 +56,8 @@
           "address_offset": "Address offset",
           "hot_water_min": "Hot water setpoint: lowest",
           "hot_water_max": "Hot water setpoint: highest",
-          "operating_modes": "Operating modes to offer"
+          "operating_modes": "Operating modes to offer",
+          "writable": "Writable from Home Assistant"
         },
         "data_description": {
           "status_interval": "How often temperatures and status are read.",
@@ -65,7 +66,8 @@
           "address_offset": "0 unless tools/probe.py showed that the outdoor temperature sits one register lower.",
           "hot_water_min": "Lowest hot water setpoint that can be set from Home Assistant (technically 30 to 85 °C).",
           "hot_water_max": "Highest hot water setpoint that can be set from Home Assistant.",
-          "operating_modes": "Modes the operating mode select offers. Second heat generator runs on the heating rod alone; cooling needs a cooling setup."
+          "operating_modes": "Modes the operating mode select offers. Second heat generator runs on the heating rod alone; cooling needs a cooling setup.",
+          "writable": "Only what is ticked can be changed from Home Assistant; everything else is only shown. Every write lands in the controller's non-volatile memory, so tick only what you really change from here."
         }
       }
     },
@@ -96,6 +98,23 @@
         "0": "0 (as documented)",
         "minus_1": "-1 (all registers one lower)"
       }
+    },
+    "writable": {
+      "options": {
+        "clock": "Controller clock (button)",
+        "operating_mode": "Operating mode",
+        "heating_curve_offset": "Heating curve step",
+        "holiday_days": "Holiday days",
+        "party_hours": "Party hours",
+        "hot_water_setpoint": "Hot water setpoint",
+        "hot_water_hysteresis": "Hot water hysteresis",
+        "hot_water_setpoint_max": "Hot water maximum temperature",
+        "hot_water_setpoint_min": "Hot water minimum temperature",
+        "heating_hysteresis": "Heating circuit hysteresis",
+        "heating_curve_end_point": "Heating curve end point",
+        "heating_curve_fixed_setpoint": "Fixed setpoint",
+        "room_temperature_setpoint": "Room temperature setpoint"
+      }
     }
   },
   "entity": {
@@ -113,20 +132,38 @@
       }
     },
     "number": {
-      "hot_water_setpoint": {
-        "name": "Hot water setpoint"
+      "heating_curve_end_point": {
+        "name": "Heating curve end point (HK1)"
       },
-      "hot_water_hysteresis": {
-        "name": "Hot water hysteresis"
-      },
-      "party_hours": {
-        "name": "Party hours"
+      "heating_curve_fixed_setpoint": {
+        "name": "Heating curve fixed setpoint (HK1)"
       },
       "heating_curve_offset": {
         "name": "Heating curve offset (HK1)"
       },
+      "heating_hysteresis": {
+        "name": "Heating hysteresis"
+      },
       "holiday_days": {
         "name": "Holiday days"
+      },
+      "hot_water_hysteresis": {
+        "name": "Hot water hysteresis"
+      },
+      "hot_water_setpoint": {
+        "name": "Hot water setpoint"
+      },
+      "hot_water_setpoint_max": {
+        "name": "Hot water setpoint maximum"
+      },
+      "hot_water_setpoint_min": {
+        "name": "Hot water setpoint minimum"
+      },
+      "party_hours": {
+        "name": "Party hours"
+      },
+      "room_temperature_setpoint": {
+        "name": "Room temperature setpoint"
       }
     },
     "select": {
@@ -205,8 +242,20 @@
       "heating_curve_fixed_setpoint": {
         "name": "Heating curve fixed setpoint (HK1)"
       },
+      "heating_curve_offset": {
+        "name": "Heating curve offset (HK1)"
+      },
       "heating_hysteresis": {
         "name": "Heating hysteresis"
+      },
+      "holiday_days": {
+        "name": "Holiday days"
+      },
+      "hot_water_hysteresis": {
+        "name": "Hot water hysteresis"
+      },
+      "hot_water_setpoint": {
+        "name": "Hot water setpoint"
       },
       "hot_water_setpoint_active": {
         "name": "Active hot water setpoint"
@@ -277,6 +326,9 @@
       },
       "outdoor_temperature": {
         "name": "Outdoor temperature"
+      },
+      "party_hours": {
+        "name": "Party hours"
       },
       "pressure_101": {
         "name": "Pressure (Register 101)"

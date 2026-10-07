@@ -69,7 +69,7 @@ async def test_missing_registers_are_left_out(
     assert coordinator.data.raw[7] == 0x10000 - 71
     requests = simulator.requests
     await coordinator.async_refresh()
-    # Status tier only, and no more probing of the missing register: 1-3, 5, 7-8, 53, 58, 101, 103...
+    # Status tier only, and no more probing of the missing register: 1-3, 5, 7-8, 53, 58, 101..
     assert simulator.requests - requests == 7
 
 

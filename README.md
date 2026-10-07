@@ -54,10 +54,17 @@ the **current** Weishaupt generation (WBB, WWP LS) and do not fit these units.
 enabled in the options. A mode set at the controller that is not offered is
 shown by "active operating mode".
 
+**"Auto" at the controller** (switches between winter and summer by the outdoor
+temperature) has no value of its own: the controller reports the mode Auto has
+chosen, so Home Assistant shows "winter" or "summer". Home Assistant cannot set
+Auto; choosing winter or summer there most likely ends it.
+
 **Party and holiday** have their own durations (party hours, holiday days). How
 exactly the controller uses them — whether the duration must be set before
-switching, whether it switches back by itself, and whether the values count
-down — is still to be checked on a real unit.
+switching and whether the values count down — is still to be checked on a real
+unit. According to the operating manual it switches back to the previous mode by
+itself when the time is up; holiday lowers the heating curve by the set-back
+value and blocks hot water.
 
 Registers a unit does not have are detected on the first read and not asked
 for again; their entities are unavailable.

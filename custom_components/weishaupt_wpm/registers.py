@@ -201,6 +201,7 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=72,
         write_min=0,
         write_max=72,
+        verified=True,
     ),
     Register(
         "holiday_days",
@@ -210,10 +211,12 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=150,
         write_min=0,
         write_max=150,
+        verified=True,
     ),
     # Heating circuit 1. Only the heating curve step (243) can be changed, like every write
-    # only on an explicit user action. Only 243 was compared with the display
-    # (raw 17 = step -2, "2 below the middle"); the others are read as documented.
+    # only on an explicit user action. Step (17 = -2, 20 = +1, 16 = -3), hysteresis and end
+    # point were compared with the display; fixed setpoint and room temperature are hidden
+    # there when the controller follows the heating curve.
     Register(
         "room_temperature_setpoint",
         46,
@@ -231,6 +234,7 @@ REGISTERS: tuple[Register, ...] = (
         scale=0.1,
         valid_min=0.5,
         valid_max=5.0,
+        verified=True,
     ),
     Register(
         "heating_curve_offset",
@@ -259,6 +263,7 @@ REGISTERS: tuple[Register, ...] = (
         "Heizkurvenendpunkt (HK1)",
         valid_min=20.0,
         valid_max=70.0,
+        verified=True,
     ),
     # Hot water settings in whole °C / K (254 = 46 while 58 shows 46.0, display 46.0 °C).
     # The write range of the setpoint is the technical one from the Weishaupt manual
@@ -272,6 +277,7 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=30,
         write_min=2,
         write_max=15,
+        verified=True,
     ),
     Register(
         "hot_water_setpoint",
@@ -291,6 +297,7 @@ REGISTERS: tuple[Register, ...] = (
         "Warmwasser Solltemperatur Maximal",
         valid_min=10,
         valid_max=85,
+        verified=True,
     ),
     Register(
         "hot_water_setpoint_min",

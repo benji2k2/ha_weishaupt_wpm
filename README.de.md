@@ -56,10 +56,16 @@ Anlagen.
 sie in den Optionen freigegeben sind. Ist am Regler ein Modus gesetzt, der nicht
 angeboten wird, zeigt „Betriebsmodus aktiv“ ihn an.
 
+**„Auto“ am Regler** (schaltet nach Außentemperatur zwischen Winter und Sommer)
+hat keinen eigenen Wert: Der Regler meldet den Modus, den Auto gerade gewählt
+hat, Home Assistant zeigt also „Winter“ oder „Sommer“. Setzen kann Home Assistant
+Auto nicht; Winter oder Sommer dort zu wählen, beendet Auto sehr wahrscheinlich.
+
 **Party und Urlaub** haben eigene Dauer-Werte (Partystunden, Urlaubstage). Wie
 der Regler sie genau verwendet — ob die Dauer vor dem Umschalten gesetzt sein
-muss, ob er danach selbst zurückschaltet und ob die Werte herunterzählen —, ist
-noch an der Anlage zu prüfen.
+muss und ob die Werte herunterzählen —, ist noch an der Anlage zu prüfen. Laut
+Bedienungsanleitung schaltet er nach Ablauf selbst in den vorherigen Modus
+zurück; Urlaub senkt die Heizkurve um den Absenkwert und sperrt das Warmwasser.
 
 Register, die es an einer Anlage nicht gibt, erkennt die Integration beim
 ersten Lesen und fragt sie danach nicht mehr ab; ihre Entitäten sind nicht

@@ -99,7 +99,53 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "fault_active": {
+        "name": "Störung aktiv"
+      },
+      "lock_active": {
+        "name": "Sperre aktiv"
+      }
+    },
+    "button": {
+      "set_clock": {
+        "name": "Uhrzeit des Reglers stellen"
+      }
+    },
+    "number": {
+      "hot_water_setpoint": {
+        "name": "Warmwasser-Solltemperatur"
+      },
+      "hot_water_hysteresis": {
+        "name": "Warmwasser-Hysterese"
+      },
+      "party_hours": {
+        "name": "Partystunden"
+      },
+      "heating_curve_offset": {
+        "name": "Heizkurve Verschiebung (HK1)"
+      },
+      "holiday_days": {
+        "name": "Urlaubstage"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Betriebsmodus",
+        "state": {
+          "summer": "Sommer",
+          "winter": "Winter",
+          "holiday": "Urlaub",
+          "party": "Party",
+          "second_heat_generator": "2. Wärmeerzeuger",
+          "cooling": "Kühlen"
+        }
+      }
+    },
     "sensor": {
+      "clock_deviation": {
+        "name": "Abweichung der Regler-Uhr"
+      },
       "environmental_energy": {
         "name": "Umweltenergie"
       },
@@ -346,67 +392,32 @@
       "write_count": {
         "name": "Schreibzugriffe auf den Regler"
       }
-    },
-    "binary_sensor": {
-      "fault_active": {
-        "name": "Störung aktiv"
-      },
-      "lock_active": {
-        "name": "Sperre aktiv"
-      }
-    },
-    "number": {
-      "hot_water_setpoint": {
-        "name": "Warmwasser-Solltemperatur"
-      },
-      "hot_water_hysteresis": {
-        "name": "Warmwasser-Hysterese"
-      },
-      "party_hours": {
-        "name": "Partystunden"
-      },
-      "heating_curve_offset": {
-        "name": "Heizkurve Verschiebung (HK1)"
-      },
-      "holiday_days": {
-        "name": "Urlaubstage"
-      }
-    },
-    "select": {
-      "operating_mode": {
-        "name": "Betriebsmodus",
-        "state": {
-          "summer": "Sommer",
-          "winter": "Winter",
-          "holiday": "Urlaub",
-          "party": "Party",
-          "second_heat_generator": "2. Wärmeerzeuger",
-          "cooling": "Kühlen"
-        }
-      }
     }
   },
   "exceptions": {
+    "clock_not_applied": {
+      "message": "Der Regler hat das neue Datum bzw. die Uhrzeit nicht übernommen."
+    },
+    "mode_not_allowed": {
+      "message": "Der Betriebsmodus {mode} ist in den Optionen nicht freigegeben."
+    },
     "not_writable": {
       "message": "{key} kann nicht geändert werden."
     },
     "out_of_range": {
       "message": "{value} liegt außerhalb des erlaubten Bereichs {min} bis {max}."
     },
-    "write_too_soon": {
-      "message": "Diese Einstellung wurde gerade erst geändert. Zum Schutz des Reglerspeichers ist die nächste Änderung in {seconds} s möglich."
-    },
-    "mode_not_allowed": {
-      "message": "Der Betriebsmodus {mode} ist in den Optionen nicht freigegeben."
-    },
-    "write_rejected": {
-      "message": "Die Wärmepumpe hat den Wert abgelehnt (Modbus-Exception {code})."
-    },
     "write_failed": {
       "message": "Schreiben fehlgeschlagen: {error}"
     },
     "write_not_applied": {
       "message": "Die Wärmepumpe hat den Wert nicht übernommen, sie meldet {value}."
+    },
+    "write_rejected": {
+      "message": "Die Wärmepumpe hat den Wert abgelehnt (Modbus-Exception {code})."
+    },
+    "write_too_soon": {
+      "message": "Diese Einstellung wurde gerade erst geändert. Zum Schutz des Reglerspeichers ist die nächste Änderung in {seconds} s möglich."
     }
   }
 }

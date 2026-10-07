@@ -51,4 +51,5 @@ async def async_get_config_entry_diagnostics(
         "client": dict(coordinator.client.stats),
         "writes": list(coordinator.write_log),
         "write_count_since_setup": coordinator.write_count,
+        "clock_deviation_minutes": coordinator.clock_deviation,
     }

@@ -1,8 +1,9 @@
 """A deliberately small Modbus client for the WPM heat pump manager.
 
-It speaks exactly two function codes: read holding registers (FC03) and write a
-single register (FC06). The Carel PCOS004850 card does not support writing several
-registers at once, and nothing else is needed.
+It speaks three function codes: read holding registers (FC03), write a single
+register (FC06) and write a single coil (FC05). FC05 is only used for the "set"
+bits that make the controller take over a written date or time. The Carel
+PCOS004850 card does not support writing several registers at once.
 
 Two transports over one TCP connection:
 
@@ -32,6 +33,8 @@ _LOGGER = logging.getLogger(__name__)
 
 READ_HOLDING_REGISTERS = 0x03
 WRITE_SINGLE_REGISTER = 0x06
+WRITE_SINGLE_COIL = 0x05
+COIL_ON = 0xFF00
 MAX_READ_COUNT = 125
 
 TRANSPORT_RTU_OVER_TCP = "rtuovertcp"
@@ -109,6 +112,13 @@ def write_request_pdu(address: int, value: int) -> bytes:
     return struct.pack(">BHH", WRITE_SINGLE_REGISTER, address, value)
 
 
+def write_coil_request_pdu(address: int, on: bool = True) -> bytes:
+    """PDU for FC05."""
+    if not 0 <= address <= 0xFFFF:
+        raise ValueError(f"address {address} out of range")
+    return struct.pack(">BHH", WRITE_SINGLE_COIL, address, COIL_ON if on else 0)
+
+
 def rtu_frame(unit: int, pdu: bytes) -> bytes:
     """Complete RTU frame: unit, PDU, CRC."""
     return with_crc(bytes([unit]) + pdu)
@@ -138,7 +148,7 @@ def check_response_pdu(request: bytes, response: bytes) -> bytes:
         count = struct.unpack(">H", request[3:5])[0]
         if len(response) != 2 + 2 * count or response[1] != 2 * count:
             raise ModbusFrameError("wrong length in read response")
-    elif function == WRITE_SINGLE_REGISTER:
+    elif function in (WRITE_SINGLE_REGISTER, WRITE_SINGLE_COIL):
         if response != request:
             raise ModbusFrameError("write response does not echo the request")
     return response
@@ -159,7 +169,7 @@ async def read_rtu_response(reader: asyncio.StreamReader, unit: int) -> bytes:
     elif function == READ_HOLDING_REGISTERS:
         length = await reader.readexactly(1)
         rest = length + await reader.readexactly(length[0] + 2)
-    elif function == WRITE_SINGLE_REGISTER:
+    elif function in (WRITE_SINGLE_REGISTER, WRITE_SINGLE_COIL):
         rest = await reader.readexactly(6)
     else:
         raise ModbusFrameError(f"unexpected function {function:#04x}")
@@ -230,6 +240,11 @@ class ModbusClient:
     async def write_register(self, address: int, value: int) -> None:
         """Write one register. Not repeated on failure: the caller reads back instead."""
         request = write_request_pdu(address, value)
+        await self._request(request, retries=0)
+
+    async def write_coil(self, address: int, on: bool = True) -> None:
+        """Write one coil. Not repeated on failure either."""
+        request = write_coil_request_pdu(address, on)
         await self._request(request, retries=0)
 
     async def close(self) -> None:

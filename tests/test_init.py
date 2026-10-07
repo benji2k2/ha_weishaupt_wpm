@@ -52,8 +52,9 @@ async def test_one_device_with_all_entities(
     assert (DOMAIN, setup_entry.unique_id) in device.identifiers
     assert device.manufacturer == "Weishaupt"
     entities = er.async_entries_for_device(er.async_get(hass), device.id, True)
-    # 34 sensors (30 registers, 3 heat amounts, write count), 2 binary sensors, 5 numbers, 1 select.
-    assert len(entities) == 42
+    # 35 sensors (30 registers, 3 heat amounts, write count, clock deviation),
+    # 2 binary sensors, 5 numbers, 1 select, 1 button.
+    assert len(entities) == 44
 
 
 async def test_missing_registers_are_left_out(

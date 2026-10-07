@@ -31,6 +31,7 @@ import contextlib
 import logging
 import math
 import struct
+import time
 
 try:
     from . import _wpm
@@ -129,6 +130,15 @@ class WpmSimulator:
         for counter in registers.COUNTERS:
             if not self.missing.intersection(counter.addresses):
                 self.set_counter(counter.key, START_COUNTERS.get(counter.key, 0))
+        # Clock: a written value waits until its "set" coil is written (Dimplex "Zeitabgleich").
+        self.pending_clock: dict[int, int] = {}
+        self.coil_writes: list[int] = []
+        self.ignore_set_coils = False  # acknowledge the coil but keep the old value
+        self._coil_to_register: dict[int, int] = {}
+        self.set_clock(time.localtime())
+        for field in registers.CLOCK_FIELDS:
+            self.write_ranges[self._pdu(field.address)] = (field.low, field.high)
+            self._coil_to_register[self._pdu(field.set_coil)] = self._pdu(field.address)
 
     def _pdu(self, address: int) -> int:
         return address + self.offset
@@ -155,6 +165,19 @@ class WpmSimulator:
         self.set(counter.low, value % 10_000)
         self.set(counter.mid, value // 10_000 % 10_000)
         self.set(counter.high, value // 100_000_000)
+
+    def set_clock(self, moment: time.struct_time) -> None:
+        """Set the controller clock directly (like at the display)."""
+        values = {
+            "year": moment.tm_year % 100,
+            "month": moment.tm_mon,
+            "day": moment.tm_mday,
+            "weekday": moment.tm_wday + 1,
+            "hour": moment.tm_hour,
+            "minute": moment.tm_min,
+        }
+        for field in registers.CLOCK_FIELDS:
+            self.set(field.address, values[field.key])
 
     def tick(self) -> None:
         """Let time pass: temperatures drift, status cycles, counters grow."""
@@ -192,14 +215,36 @@ class WpmSimulator:
             low, high = self.write_ranges[address]
             if not low <= value <= high:
                 return bytes([function | 0x80, 3])
-            self.memory[address] = value
             self.writes.append((address - self.offset, value))
+            if address in self._coil_to_register.values():
+                self.pending_clock[address] = value
+            else:
+                self.memory[address] = value
+            return pdu
+        if function == modbus.WRITE_SINGLE_COIL and len(pdu) == 5:
+            address, value = struct.unpack(">HH", pdu[1:5])
+            if address not in self._coil_to_register:
+                return bytes([function | 0x80, 2])
+            if value not in (0, modbus.COIL_ON):
+                return bytes([function | 0x80, 3])
+            self.coil_writes.append(address - self.offset)
+            register = self._coil_to_register[address]
+            if (
+                value == modbus.COIL_ON
+                and register in self.pending_clock
+                and not self.ignore_set_coils
+            ):
+                self.memory[register] = self.pending_clock.pop(register)
             return pdu
         return bytes([function | 0x80, 1])
 
     async def _read_rtu_request(self, reader: asyncio.StreamReader) -> tuple[int, bytes] | None:
         head = await reader.readexactly(2)
-        if head[1] in (modbus.READ_HOLDING_REGISTERS, modbus.WRITE_SINGLE_REGISTER):
+        if head[1] in (
+            modbus.READ_HOLDING_REGISTERS,
+            modbus.WRITE_SINGLE_REGISTER,
+            modbus.WRITE_SINGLE_COIL,
+        ):
             frame = head + await reader.readexactly(6)
         elif head[1] == 0x10:  # write multiple registers: address, count, byte count
             rest = await reader.readexactly(5)

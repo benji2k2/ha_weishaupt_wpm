@@ -191,6 +191,7 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=5,
         write_min=0,
         write_max=5,
+        verified=True,  # 0 = summer and 1 = winter seen at the display
     ),
     Register(
         "party_hours",
@@ -320,6 +321,32 @@ COUNTERS: tuple[Counter, ...] = (
     Counter("environmental_energy", 334, 335, 336, "Umweltenergie", verified=True),
 )
 
+
+@dataclass(frozen=True)
+class ClockField:
+    """One part of the controller's date and time (Dimplex "Zeitabgleich", software J/L).
+
+    A written value only takes effect after writing 1 to its "set" coil right away;
+    the coil resets itself to 0.
+    """
+
+    key: str
+    address: int
+    set_coil: int
+    low: int
+    high: int
+
+
+# In the order they are written: the date first, the minute last.
+CLOCK_FIELDS: tuple[ClockField, ...] = (
+    ClockField("year", 218, 106, 0, 99),
+    ClockField("month", 215, 105, 1, 12),
+    ClockField("day", 217, 104, 1, 31),
+    ClockField("weekday", 216, 107, 1, 7),  # 1 = Monday, like isoweekday()
+    ClockField("hour", 213, 102, 0, 23),
+    ClockField("minute", 214, 103, 0, 59),
+)
+
 REGISTERS_BY_KEY: dict[str, Register] = {register.key: register for register in REGISTERS}
 REGISTERS_BY_ADDRESS: dict[int, Register] = {register.address: register for register in REGISTERS}
 COUNTERS_BY_KEY: dict[str, Counter] = {counter.key: counter for counter in COUNTERS}
@@ -332,6 +359,7 @@ def addresses_by_group() -> dict[Group, list[int]]:
         groups[register.group].append(register.address)
     for counter in COUNTERS:
         groups[Group.COUNTERS].extend(counter.addresses)
+    groups[Group.SETTINGS].extend(field.address for field in CLOCK_FIELDS)
     return {group: sorted(set(addresses)) for group, addresses in groups.items()}
 
 

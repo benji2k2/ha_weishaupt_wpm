@@ -75,6 +75,14 @@ Schreiben kann ihn verschleißen. Die Integration schützt sich selbst:
 - Jedes Register wird höchstens **einmal in 30 Sekunden** geschrieben.
 - Nach jedem Schreiben wird zurückgelesen; die Diagnosedaten zeigen die letzten
   20 Schreibvorgänge.
+- Ein Diagnose-Sensor zählt jeden Schreibbefehl an den Regler, auch über
+  Neustarts hinweg.
+
+**Uhr des Reglers:** Der Knopf *Uhrzeit des Reglers stellen* setzt Datum und Uhrzeit
+des WPM auf die von Home Assistant. Geschrieben werden nur abweichende Teile, jeweils
+mit dem zugehörigen „set“-Coil (FC05, laut Dimplex ab Software J/L). Von selbst
+drückt niemand den Knopf; der Sensor *Abweichung der Regler-Uhr* zeigt einer
+Automation, wann es sich lohnt, z. B. einmal im Monat ab einigen Minuten Abweichung.
 
 **Keine Automationen bauen, die regelmäßig schreiben** (z. B. den
 Warmwasser-Sollwert nach Strompreis alle paar Minuten verstellen).

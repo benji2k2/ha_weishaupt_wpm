@@ -9,7 +9,13 @@ from .const import CONF_TRANSPORT, CONF_UNIT
 from .coordinator import WpmConfigEntry, WpmCoordinator
 from .modbus import ModbusClient
 
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.NUMBER, Platform.SELECT, Platform.SENSOR]
+PLATFORMS = [
+    Platform.BINARY_SENSOR,
+    Platform.BUTTON,
+    Platform.NUMBER,
+    Platform.SELECT,
+    Platform.SENSOR,
+]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: WpmConfigEntry) -> bool:

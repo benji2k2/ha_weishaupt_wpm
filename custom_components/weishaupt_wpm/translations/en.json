@@ -99,7 +99,53 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "fault_active": {
+        "name": "Fault active"
+      },
+      "lock_active": {
+        "name": "Lock active"
+      }
+    },
+    "button": {
+      "set_clock": {
+        "name": "Set controller clock"
+      }
+    },
+    "number": {
+      "hot_water_setpoint": {
+        "name": "Hot water setpoint"
+      },
+      "hot_water_hysteresis": {
+        "name": "Hot water hysteresis"
+      },
+      "party_hours": {
+        "name": "Party hours"
+      },
+      "heating_curve_offset": {
+        "name": "Heating curve offset (HK1)"
+      },
+      "holiday_days": {
+        "name": "Holiday days"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Operating mode",
+        "state": {
+          "summer": "Summer",
+          "winter": "Winter",
+          "holiday": "Holiday",
+          "party": "Party",
+          "second_heat_generator": "Second heat generator",
+          "cooling": "Cooling"
+        }
+      }
+    },
     "sensor": {
+      "clock_deviation": {
+        "name": "Controller clock deviation"
+      },
       "environmental_energy": {
         "name": "Environmental energy"
       },
@@ -346,67 +392,32 @@
       "write_count": {
         "name": "Writes to the controller"
       }
-    },
-    "binary_sensor": {
-      "fault_active": {
-        "name": "Fault active"
-      },
-      "lock_active": {
-        "name": "Lock active"
-      }
-    },
-    "number": {
-      "hot_water_setpoint": {
-        "name": "Hot water setpoint"
-      },
-      "hot_water_hysteresis": {
-        "name": "Hot water hysteresis"
-      },
-      "party_hours": {
-        "name": "Party hours"
-      },
-      "heating_curve_offset": {
-        "name": "Heating curve offset (HK1)"
-      },
-      "holiday_days": {
-        "name": "Holiday days"
-      }
-    },
-    "select": {
-      "operating_mode": {
-        "name": "Operating mode",
-        "state": {
-          "summer": "Summer",
-          "winter": "Winter",
-          "holiday": "Holiday",
-          "party": "Party",
-          "second_heat_generator": "Second heat generator",
-          "cooling": "Cooling"
-        }
-      }
     }
   },
   "exceptions": {
+    "clock_not_applied": {
+      "message": "The controller did not take over the new date or time."
+    },
+    "mode_not_allowed": {
+      "message": "The operating mode {mode} is not enabled in the options."
+    },
     "not_writable": {
       "message": "{key} cannot be changed."
     },
     "out_of_range": {
       "message": "{value} is outside the allowed range {min} to {max}."
     },
-    "write_too_soon": {
-      "message": "This setting was changed a moment ago. To spare the controller's memory it can be changed again in {seconds} s."
-    },
-    "mode_not_allowed": {
-      "message": "The operating mode {mode} is not enabled in the options."
-    },
-    "write_rejected": {
-      "message": "The heat pump rejected the value (Modbus exception {code})."
-    },
     "write_failed": {
       "message": "Writing failed: {error}"
     },
     "write_not_applied": {
       "message": "The heat pump did not take the value; it reports {value}."
+    },
+    "write_rejected": {
+      "message": "The heat pump rejected the value (Modbus exception {code})."
+    },
+    "write_too_soon": {
+      "message": "This setting was changed a moment ago. To spare the controller's memory it can be changed again in {seconds} s."
     }
   }
 }

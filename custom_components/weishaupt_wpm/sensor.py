@@ -151,6 +151,7 @@ async def async_setup_entry(
             *(WpmRegisterSensor(coordinator, description) for description in REGISTER_SENSORS),
             *(WpmCounterSensor(coordinator, description) for description in COUNTER_SENSORS),
             WpmWriteCountSensor(coordinator),
+            WpmClockDeviationSensor(coordinator),
         ]
     )
 
@@ -232,3 +233,22 @@ class WpmWriteCountSensor(WpmEntity, RestoreSensor):
     @property
     def native_value(self) -> int:
         return self._restored + self.coordinator.write_count
+
+
+class WpmClockDeviationSensor(WpmEntity, SensorEntity):
+    """Controller clock minus Home Assistant's clock, in whole minutes (+ = ahead)."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coordinator: WpmCoordinator) -> None:
+        super().__init__(coordinator, "clock_deviation")
+
+    @property
+    def native_value(self) -> int | None:
+        return self.coordinator.clock_deviation
+
+    @property
+    def available(self) -> bool:
+        return super().available and self.coordinator.clock_deviation is not None

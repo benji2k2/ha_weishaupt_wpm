@@ -71,6 +71,14 @@ with constant writing. The integration protects it:
 - A value that is already set is not written again.
 - Each register is written at most **once every 30 seconds**.
 - Every write is read back; diagnostics list the last 20 writes.
+- A diagnostic sensor counts every write command sent to the controller, kept
+  across restarts.
+
+**Controller clock:** the button *Set controller clock* sets the WPM's date and time
+to Home Assistant's. Only parts that differ are written, each followed by its
+"set" coil (FC05, as documented by Dimplex for software J/L). Nothing presses the
+button on its own; the *controller clock deviation* sensor tells an automation when
+it is worth it, e.g. once a month when the clock is more than a few minutes off.
 
 **Do not build automations that write periodically** (e.g. moving the hot water
 setpoint with the electricity price every few minutes).

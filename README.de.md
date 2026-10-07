@@ -101,6 +101,18 @@ Warmwasser-Sollwert nach Strompreis alle paar Minuten verstellen).
 - Am WPM (ESC + ENTER 5 s, Menü Netzwerk): Protokoll **MODBUS RTU**, Adresse 1,
   Parität None, 1 Stoppbit, 9600 Baud
 
+Menüs am Display des Reglers (WPM-Software L23):
+
+| Tasten | Menü |
+|---|---|
+| **Menue** einige Sekunden halten | Einstellungen, Betriebsdaten, Historie |
+| **Menue + Enter** 5 s | erweitertes Menü mit mehr Einstellungen (z. B. Hysterese Heizkreis) |
+| **ESC + Enter** 5 s | Netzwerk (Modbus) |
+
+Zum Ablesen nur blättern, mit **ESC** zurück. Das Menü **Uhrzeit** nicht offen
+lassen, während Home Assistant die Uhr stellt: Beim Verlassen schreibt es die alte
+Zeit zurück.
+
 Ein echtes Modbus-TCP-Gateway (z. B. Waveshare „(B)“) geht ebenfalls:
 Übertragung **Modbus TCP** wählen.
 

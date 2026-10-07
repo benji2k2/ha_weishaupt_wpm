@@ -98,6 +98,17 @@ setpoint with the electricity price every few minutes).
 - At the WPM (ESC + ENTER for 5 s, network menu): protocol **MODBUS RTU**,
   address 1, parity none, 1 stop bit, 9600 baud
 
+Menus at the controller's display (WPM software L23):
+
+| Keys | Menu |
+|---|---|
+| **Menue** held for a few seconds | settings, operating data, history |
+| **Menue + Enter** for 5 s | extended menu with more settings (e.g. heating circuit hysteresis) |
+| **ESC + Enter** for 5 s | network (Modbus) |
+
+Only look, leave with **ESC**. Do not leave the **clock** menu open while the
+clock is set from Home Assistant: on leaving, it writes the old time back.
+
 A real Modbus TCP gateway (e.g. Waveshare "(B)") works too: choose transport
 **Modbus TCP**.
 

@@ -239,6 +239,8 @@ REGISTERS: tuple[Register, ...] = (
         offset=-19.0,
         valid_min=-19.0,
         valid_max=19.0,
+        write_min=-19.0,
+        write_max=19.0,
         verified=True,
     ),
     Register(

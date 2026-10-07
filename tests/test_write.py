@@ -151,3 +151,13 @@ async def test_modes_from_the_options(hass: HomeAssistant, simulator: WpmSimulat
     assert err.value.translation_key == "mode_not_allowed"
     assert simulator.get(222) == 5
     await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_heating_curve_offset(hass, setup_entry, simulator, freezer):
+    await set_number(hass, "number.weishaupt_wpm_heating_curve_offset_hk1", -2)
+    assert simulator.get(243) == 17
+
+    freezer.tick(31)
+
+    await set_number(hass, "number.weishaupt_wpm_heating_curve_offset_hk1", 19)
+    assert simulator.get(243) == 38

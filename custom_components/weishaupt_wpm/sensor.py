@@ -87,11 +87,6 @@ REGISTER_SENSORS: tuple[WpmSensorDescription, ...] = (
     _temperature("heating_curve_fixed_setpoint", measured=False),
     _temperature("heating_curve_end_point", measured=False),
     WpmSensorDescription(
-        key="heating_curve_offset",
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=0,
-    ),
-    WpmSensorDescription(
         key="heating_hysteresis",
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement="K",

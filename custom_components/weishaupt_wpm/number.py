@@ -48,6 +48,11 @@ NUMBERS: tuple[NumberEntityDescription, ...] = (
         native_step=1,
         mode=NumberMode.BOX,
     ),
+    NumberEntityDescription(
+        key="heating_curve_offset",
+        native_step=1,
+        mode=NumberMode.SLIDER,
+    ),
 )
 
 

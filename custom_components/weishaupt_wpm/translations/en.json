@@ -153,9 +153,6 @@
       "heating_curve_fixed_setpoint": {
         "name": "Heating curve fixed setpoint (HK1)"
       },
-      "heating_curve_offset": {
-        "name": "Heating curve offset (HK1)"
-      },
       "heating_hysteresis": {
         "name": "Heating hysteresis"
       },
@@ -364,6 +361,9 @@
       },
       "party_hours": {
         "name": "Party hours"
+      },
+      "heating_curve_offset": {
+        "name": "Heating curve offset (HK1)"
       },
       "holiday_days": {
         "name": "Holiday days"

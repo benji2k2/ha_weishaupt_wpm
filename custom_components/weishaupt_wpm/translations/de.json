@@ -153,9 +153,6 @@
       "heating_curve_fixed_setpoint": {
         "name": "Festwertsolltemperatur (HK1)"
       },
-      "heating_curve_offset": {
-        "name": "Heizkurve Verschiebung (Stufe)"
-      },
       "heating_hysteresis": {
         "name": "Heizung Hysterese"
       },
@@ -364,6 +361,9 @@
       },
       "party_hours": {
         "name": "Partystunden"
+      },
+      "heating_curve_offset": {
+        "name": "Heizkurve Verschiebung (HK1)"
       },
       "holiday_days": {
         "name": "Urlaubstage"

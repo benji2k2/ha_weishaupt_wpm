@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    mock_restore_cache_with_extra_data,
+)
 
 from custom_components.weishaupt_wpm.const import (
     CONF_HOT_WATER_MAX,
@@ -165,3 +168,40 @@ async def test_heating_curve_offset(
     with pytest.raises(ServiceValidationError):
         await set_number(hass, "number.weishaupt_wpm_heating_curve_offset_hk1", 20)
     assert simulator.get(243) == 38
+
+
+WRITE_COUNT = "sensor.weishaupt_wpm_writes_to_the_controller"
+
+
+async def test_write_count_counts_only_sent_writes(
+    hass: HomeAssistant, setup_entry: MockConfigEntry, simulator: WpmSimulator, freezer
+) -> None:
+    assert hass.states.get(WRITE_COUNT).state == "0"
+    await set_number(hass, "number.weishaupt_wpm_hot_water_setpoint", 55)
+    assert hass.states.get(WRITE_COUNT).state == "1"
+    # Same value, too soon, out of range: refused before anything is sent.
+    await set_number(hass, "number.weishaupt_wpm_hot_water_setpoint", 55)
+    with pytest.raises(HomeAssistantError):
+        await set_number(hass, "number.weishaupt_wpm_hot_water_setpoint", 50)
+    with pytest.raises(ServiceValidationError):
+        await set_number(hass, "number.weishaupt_wpm_party_hours", 99)
+    assert hass.states.get(WRITE_COUNT).state == "1"
+    freezer.tick(31)
+    await set_number(hass, "number.weishaupt_wpm_hot_water_setpoint", 50)
+    assert hass.states.get(WRITE_COUNT).state == "2"
+
+
+async def test_write_count_survives_a_restart(hass: HomeAssistant, simulator: WpmSimulator) -> None:
+    mock_restore_cache_with_extra_data(
+        hass,
+        [(State(WRITE_COUNT, "7"), {"native_value": 7, "native_unit_of_measurement": None})],
+    )
+    entry = entry_for(simulator)
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert hass.states.get(WRITE_COUNT).state == "7"
+    await set_number(hass, "number.weishaupt_wpm_hot_water_setpoint", 55)
+    assert hass.states.get(WRITE_COUNT).state == "8"
+    await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.sensor import (
+    RestoreSensor,
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
@@ -149,6 +150,7 @@ async def async_setup_entry(
         [
             *(WpmRegisterSensor(coordinator, description) for description in REGISTER_SENSORS),
             *(WpmCounterSensor(coordinator, description) for description in COUNTER_SENSORS),
+            WpmWriteCountSensor(coordinator),
         ]
     )
 
@@ -195,3 +197,38 @@ class WpmCounterSensor(WpmEntity, SensorEntity):
     @property
     def available(self) -> bool:
         return super().available and self.native_value is not None
+
+
+class WpmWriteCountSensor(WpmEntity, RestoreSensor):
+    """Write commands sent to the controller, kept across restarts.
+
+    Each write lands in the controller's non-volatile memory, so this makes every one
+    visible in the history. Refused attempts (same value, too soon, out of range) do
+    not count.
+    """
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_state_class = SensorStateClass.TOTAL_INCREASING
+
+    def __init__(self, coordinator: WpmCoordinator) -> None:
+        super().__init__(coordinator, "write_count")
+        self._restored = 0
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last = await self.async_get_last_sensor_data()
+        if last is not None and isinstance(last.native_value, (int, float)):
+            self._restored = int(last.native_value)
+        elif (state := await self.async_get_last_state()) is not None:
+            try:
+                self._restored = int(float(state.state))
+            except ValueError:
+                self._restored = 0
+
+    @property
+    def available(self) -> bool:
+        return True
+
+    @property
+    def native_value(self) -> int:
+        return self._restored + self.coordinator.write_count

@@ -101,6 +101,8 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
         self.unsupported: set[int] = set()
         self.group_addresses = addresses_by_group()
         self.write_log: deque[dict[str, Any]] = deque(maxlen=20)
+        # Write commands sent to the controller since setup; the sensor adds the restored total.
+        self.write_count = 0
         self._raw: dict[int, int] = {}
         self._counters: dict[str, int | None] = {}
         self._last_read: dict[Group, float] = {}
@@ -244,6 +246,9 @@ class WpmCoordinator(DataUpdateCoordinator[WpmData]):
             "written": raw,
         }
         self.write_log.append(entry)
+        # Counted before sending: a write that times out may still have reached the controller.
+        self.write_count += 1
+        self.async_update_listeners()
         try:
             await self.client.write_register(register.address + self.offset, raw)
         except ModbusExceptionResponse as err:

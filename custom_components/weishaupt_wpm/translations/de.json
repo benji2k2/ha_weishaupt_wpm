@@ -147,6 +147,12 @@
       "heat_hot_water": {
         "name": "Wärmemenge Warmwasser"
       },
+      "heat_source_inlet_temperature": {
+        "name": "Wärmequelle Eintritt"
+      },
+      "heat_source_outlet_temperature": {
+        "name": "Wärmequelle Austritt"
+      },
       "heating_curve_end_point": {
         "name": "Heizkurvenendpunkt (HK1)"
       },
@@ -155,21 +161,6 @@
       },
       "heating_hysteresis": {
         "name": "Heizung Hysterese"
-      },
-      "pressure_8": {
-        "name": "Druck (Reg 8)"
-      },
-      "pressure_101": {
-        "name": "Druck (Reg 101)"
-      },
-      "room_temperature_setpoint": {
-        "name": "Raumtemperatur Solltemperatur"
-      },
-      "heat_source_inlet_temperature": {
-        "name": "Wärmequelle Eintritt"
-      },
-      "heat_source_outlet_temperature": {
-        "name": "Wärmequelle Austritt"
       },
       "hot_water_setpoint_active": {
         "name": "Warmwasser-Solltemperatur aktiv"
@@ -241,11 +232,20 @@
       "outdoor_temperature": {
         "name": "Außentemperatur"
       },
+      "pressure_101": {
+        "name": "Druck (Reg 101)"
+      },
+      "pressure_8": {
+        "name": "Druck (Reg 8)"
+      },
       "return_setpoint": {
         "name": "Rücklauf-Solltemperatur"
       },
       "return_temperature": {
         "name": "Rücklauftemperatur"
+      },
+      "room_temperature_setpoint": {
+        "name": "Raumtemperatur Solltemperatur"
       },
       "runtime_aux_pump": {
         "name": "Laufzeit Zusatzumwälzpumpe"
@@ -342,6 +342,9 @@
             "name": "Code"
           }
         }
+      },
+      "write_count": {
+        "name": "Schreibzugriffe auf den Regler"
       }
     },
     "binary_sensor": {

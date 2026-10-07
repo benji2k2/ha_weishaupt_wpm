@@ -50,4 +50,5 @@ async def async_get_config_entry_diagnostics(
         "unsupported": sorted(coordinator.unsupported),
         "client": dict(coordinator.client.stats),
         "writes": list(coordinator.write_log),
+        "write_count_since_setup": coordinator.write_count,
     }

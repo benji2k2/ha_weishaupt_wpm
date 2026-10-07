@@ -147,6 +147,12 @@
       "heat_hot_water": {
         "name": "Heat for hot water"
       },
+      "heat_source_inlet_temperature": {
+        "name": "Heat source inlet"
+      },
+      "heat_source_outlet_temperature": {
+        "name": "Heat source outlet"
+      },
       "heating_curve_end_point": {
         "name": "Heating curve end point (HK1)"
       },
@@ -155,21 +161,6 @@
       },
       "heating_hysteresis": {
         "name": "Heating hysteresis"
-      },
-      "pressure_8": {
-        "name": "Pressure (Register 8)"
-      },
-      "pressure_101": {
-        "name": "Pressure (Register 101)"
-      },
-      "room_temperature_setpoint": {
-        "name": "Room temperature setpoint"
-      },
-      "heat_source_inlet_temperature": {
-        "name": "Heat source inlet"
-      },
-      "heat_source_outlet_temperature": {
-        "name": "Heat source outlet"
       },
       "hot_water_setpoint_active": {
         "name": "Active hot water setpoint"
@@ -241,11 +232,20 @@
       "outdoor_temperature": {
         "name": "Outdoor temperature"
       },
+      "pressure_101": {
+        "name": "Pressure (Register 101)"
+      },
+      "pressure_8": {
+        "name": "Pressure (Register 8)"
+      },
       "return_setpoint": {
         "name": "Return setpoint"
       },
       "return_temperature": {
         "name": "Return temperature"
+      },
+      "room_temperature_setpoint": {
+        "name": "Room temperature setpoint"
       },
       "runtime_aux_pump": {
         "name": "Runtime auxiliary circulation pump"
@@ -342,6 +342,9 @@
             "name": "Code"
           }
         }
+      },
+      "write_count": {
+        "name": "Writes to the controller"
       }
     },
     "binary_sensor": {

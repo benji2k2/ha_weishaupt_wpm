@@ -148,7 +148,7 @@ REGISTERS: tuple[Register, ...] = (
         "heat_source_inlet_temperature",
         6,
         "Temperatur Wärmequelleneintritt (R24), nur mit elektronischem Expansionsventil",
-        optional=True,
+        optional=True, verified=True,
     ),
     _temperature(
         "heat_source_outlet_temperature", 7, "Temperatur Wärmequellenaustritt (R6)", optional=True
@@ -166,7 +166,7 @@ REGISTERS: tuple[Register, ...] = (
         Group.STATUS,
         "Druck (Reg 8)",
         scale=0.1,
-        optional=True,
+        optional=True, verified=True,
     ),
     Register(
         "pressure_101",
@@ -174,7 +174,7 @@ REGISTERS: tuple[Register, ...] = (
         Group.STATUS,
         "Druck (Reg 101)",
         scale=0.1,
-        optional=True,
+        optional=True, verified=True,
     ),
     # System status (codes, see tables below)
     Register("status", 103, Group.STATUS, "Statusmeldungen"),
@@ -191,6 +191,7 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=5,
         write_min=0,
         write_max=5,
+        verified=True,
     ),
     Register(
         "party_hours",
@@ -218,7 +219,7 @@ REGISTERS: tuple[Register, ...] = (
         "Raumtemperatur Solltemperatur",
         scale=0.1,
         valid_min=10.0,
-        valid_max=35.0,
+        valid_max=35.0, verified=True,
         verified=True,
     ),
     Register(
@@ -236,7 +237,7 @@ REGISTERS: tuple[Register, ...] = (
         243,
         Group.SETTINGS,
         "Heizkurve Verschiebung (Stufe)",
-        offset=-19.0,
+        offset=-19.0, verified=True,
         valid_min=-19.0,
         valid_max=19.0,
         verified=True,
@@ -298,11 +299,11 @@ REGISTERS: tuple[Register, ...] = (
         "Warmwasser Solltemperatur Minimal",
         valid_min=10,
         valid_max=85,
-        optional=True,
+        optional=True, verified=True,
     ),
     # Runtimes (hours)
     _runtime(
-        "runtime_aux_pump", 71, "Laufzeit Zusatzumwälzpumpe (M16)", optional=True, verified=True
+        "runtime_aux_pump", 71, "Laufzeit Zusatzumwälzpumpe (M16)", optional=True, verified=True, verified=True
     ),
     _runtime("runtime_compressor_1", 72, "Laufzeit Verdichter 1", verified=True),
     _runtime("runtime_compressor_2", 73, "Laufzeit Verdichter 2", optional=True),

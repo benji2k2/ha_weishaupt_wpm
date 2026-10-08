@@ -331,10 +331,10 @@
         "name": "Party hours"
       },
       "pressure_101": {
-        "name": "Pressure (Register 101)"
+        "name": "Low pressure"
       },
       "pressure_8": {
-        "name": "Pressure (Register 8)"
+        "name": "High pressure"
       },
       "return_setpoint": {
         "name": "Return setpoint"

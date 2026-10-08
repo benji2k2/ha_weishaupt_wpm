@@ -100,7 +100,6 @@ REGISTER_SENSORS: tuple[WpmSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_enabled_default=False,
     ),
     WpmSensorDescription(
         key="pressure_101",
@@ -109,7 +108,6 @@ REGISTER_SENSORS: tuple[WpmSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_enabled_default=False,
     ),
     # Settings that only become sensors when the options do not make them writable
     # (for the others above, the number entity shows the value instead).

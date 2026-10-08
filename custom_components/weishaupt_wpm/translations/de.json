@@ -331,10 +331,10 @@
         "name": "Partystunden"
       },
       "pressure_101": {
-        "name": "Druck (Reg 101)"
+        "name": "Niederdruck"
       },
       "pressure_8": {
-        "name": "Druck (Reg 8)"
+        "name": "Hochdruck"
       },
       "return_setpoint": {
         "name": "Rücklauf-Solltemperatur"

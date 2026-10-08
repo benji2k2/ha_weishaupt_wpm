@@ -143,7 +143,12 @@ REGISTERS: tuple[Register, ...] = (
         verified=True,
     ),
     _temperature("hot_water_temperature", 3, "Temperatur Warmwasser (R3)", verified=True),
-    _temperature("flow_temperature", 5, "Temperatur Vorlauf (R9)"),
+    _temperature(
+        "flow_temperature",
+        5,
+        "Temperatur Vorlauf (R9), am Display „Wärmepumpe Vorlauf“",
+        verified=True,
+    ),
     _temperature(
         "heat_source_inlet_temperature",
         6,

@@ -135,7 +135,7 @@ def _runtime(
 
 REGISTERS: tuple[Register, ...] = (
     # Operating data (0.1 °C)
-    _temperature("outdoor_temperature", 1, "Außentemperatur (R1)"),
+    _temperature("outdoor_temperature", 1, "Außentemperatur (R1)", verified=True),
     _temperature(
         "return_temperature",
         2,

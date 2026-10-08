@@ -94,7 +94,7 @@ async def test_implausible_temperature_has_no_value(
 ) -> None:
     simulator.set_value("return_temperature", -99.9)
     await setup_entry.runtime_data.async_refresh()
-    assert state(hass, "sensor.weishaupt_wpm_return_temperature") == STATE_UNKNOWN
+    assert state(hass, "sensor.weishaupt_wpm_heating_circuit_1_return") == STATE_UNKNOWN
 
 
 async def test_unknown_code_is_shown_as_other(
@@ -189,14 +189,14 @@ async def test_heating_curve_settings(hass: HomeAssistant, simulator: WpmSimulat
     simulator.set(47, 20)  # 2.0 K
     del coordinator._last_read[Group.SETTINGS]
     await coordinator.async_refresh()
-    assert state(hass, "number.weishaupt_wpm_heating_curve_offset_hk1") == "-2.0"
-    hysteresis = hass.states.get("sensor.weishaupt_wpm_heating_hysteresis")
+    assert state(hass, "number.weishaupt_wpm_heating_circuit_1_heating_curve_offset") == "-2.0"
+    hysteresis = hass.states.get("sensor.weishaupt_wpm_heating_circuit_1_hysteresis")
     assert hysteresis is not None
     assert hysteresis.state == "2.0"
     assert hysteresis.attributes["unit_of_measurement"] == "K"
     # Not ticked: shown as sensors only.
-    assert hass.states.get("number.weishaupt_wpm_heating_hysteresis") is None
-    assert hass.states.get("sensor.weishaupt_wpm_heating_curve_end_point_hk1") is not None
+    assert hass.states.get("number.weishaupt_wpm_heating_circuit_1_hysteresis") is None
+    assert hass.states.get("sensor.weishaupt_wpm_heating_circuit_1_heating_curve_end_point") is not None
     await hass.config_entries.async_unload(entry.entry_id)
 
 

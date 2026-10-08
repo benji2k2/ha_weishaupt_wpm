@@ -133,16 +133,16 @@
     },
     "number": {
       "heating_curve_end_point": {
-        "name": "Heating curve end point (HK1)"
+        "name": "Heating circuit 1 heating curve end point"
       },
       "heating_curve_fixed_setpoint": {
-        "name": "Heating curve fixed setpoint (HK1)"
+        "name": "Heating circuit 1 fixed setpoint"
       },
       "heating_curve_offset": {
-        "name": "Heating curve offset (HK1)"
+        "name": "Heating circuit 1 heating curve offset"
       },
       "heating_hysteresis": {
-        "name": "Heating hysteresis"
+        "name": "Heating circuit 1 hysteresis"
       },
       "holiday_days": {
         "name": "Holiday days"
@@ -163,7 +163,7 @@
         "name": "Party hours"
       },
       "room_temperature_setpoint": {
-        "name": "Room temperature setpoint"
+        "name": "Heating circuit 1 room setpoint"
       }
     },
     "select": {
@@ -222,7 +222,7 @@
         }
       },
       "flow_temperature": {
-        "name": "Flow temperature"
+        "name": "Heat pump flow"
       },
       "heat_heating": {
         "name": "Heat for heating"
@@ -237,16 +237,16 @@
         "name": "Heat source outlet"
       },
       "heating_curve_end_point": {
-        "name": "Heating curve end point (HK1)"
+        "name": "Heating circuit 1 heating curve end point"
       },
       "heating_curve_fixed_setpoint": {
-        "name": "Heating curve fixed setpoint (HK1)"
+        "name": "Heating circuit 1 fixed setpoint"
       },
       "heating_curve_offset": {
-        "name": "Heating curve offset (HK1)"
+        "name": "Heating circuit 1 heating curve offset"
       },
       "heating_hysteresis": {
-        "name": "Heating hysteresis"
+        "name": "Heating circuit 1 hysteresis"
       },
       "holiday_days": {
         "name": "Holiday days"
@@ -331,19 +331,19 @@
         "name": "Party hours"
       },
       "pressure_101": {
-        "name": "Low pressure"
+        "name": "Heat pump low pressure"
       },
       "pressure_8": {
-        "name": "High pressure"
+        "name": "Heat pump high pressure"
       },
       "return_setpoint": {
-        "name": "Return setpoint"
+        "name": "Heating circuit 1 return setpoint"
       },
       "return_temperature": {
-        "name": "Return temperature"
+        "name": "Heating circuit 1 return"
       },
       "room_temperature_setpoint": {
-        "name": "Room temperature setpoint"
+        "name": "Heating circuit 1 room setpoint"
       },
       "runtime_aux_pump": {
         "name": "Runtime auxiliary circulation pump"

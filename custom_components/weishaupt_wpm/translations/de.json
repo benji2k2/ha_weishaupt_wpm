@@ -133,16 +133,16 @@
     },
     "number": {
       "heating_curve_end_point": {
-        "name": "Heizkurvenendpunkt (HK1)"
+        "name": "Heizkreis 1 Heizkurvenendpunkt"
       },
       "heating_curve_fixed_setpoint": {
-        "name": "Festwertsolltemperatur (HK1)"
+        "name": "Heizkreis 1 Festwert-Soll"
       },
       "heating_curve_offset": {
-        "name": "Heizkurve Verschiebung (HK1)"
+        "name": "Heizkreis 1 Heizkurve Verschiebung"
       },
       "heating_hysteresis": {
-        "name": "Heizung Hysterese"
+        "name": "Heizkreis 1 Hysterese"
       },
       "holiday_days": {
         "name": "Urlaubstage"
@@ -163,7 +163,7 @@
         "name": "Partystunden"
       },
       "room_temperature_setpoint": {
-        "name": "Raumtemperatur Solltemperatur"
+        "name": "Heizkreis 1 Raumtemperatur Soll"
       }
     },
     "select": {
@@ -222,7 +222,7 @@
         }
       },
       "flow_temperature": {
-        "name": "Vorlauftemperatur"
+        "name": "Wärmepumpe Vorlauf"
       },
       "heat_heating": {
         "name": "Wärmemenge Heizen"
@@ -237,16 +237,16 @@
         "name": "Wärmequelle Austritt"
       },
       "heating_curve_end_point": {
-        "name": "Heizkurvenendpunkt (HK1)"
+        "name": "Heizkreis 1 Heizkurvenendpunkt"
       },
       "heating_curve_fixed_setpoint": {
-        "name": "Festwertsolltemperatur (HK1)"
+        "name": "Heizkreis 1 Festwert-Soll"
       },
       "heating_curve_offset": {
-        "name": "Heizkurve Verschiebung (HK1)"
+        "name": "Heizkreis 1 Heizkurve Verschiebung"
       },
       "heating_hysteresis": {
-        "name": "Heizung Hysterese"
+        "name": "Heizkreis 1 Hysterese"
       },
       "holiday_days": {
         "name": "Urlaubstage"
@@ -331,19 +331,19 @@
         "name": "Partystunden"
       },
       "pressure_101": {
-        "name": "Niederdruck"
+        "name": "Wärmepumpe Niederdruck"
       },
       "pressure_8": {
-        "name": "Hochdruck"
+        "name": "Wärmepumpe Hochdruck"
       },
       "return_setpoint": {
-        "name": "Rücklauf-Solltemperatur"
+        "name": "Heizkreis 1 Rücklauf Soll"
       },
       "return_temperature": {
-        "name": "Rücklauftemperatur"
+        "name": "Heizkreis 1 Rücklauf"
       },
       "room_temperature_setpoint": {
-        "name": "Raumtemperatur Solltemperatur"
+        "name": "Heizkreis 1 Raumtemperatur Soll"
       },
       "runtime_aux_pump": {
         "name": "Laufzeit Zusatzumwälzpumpe"

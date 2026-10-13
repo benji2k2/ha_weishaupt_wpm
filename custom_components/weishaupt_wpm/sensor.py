@@ -12,7 +12,13 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import EntityCategory, UnitOfEnergy, UnitOfTemperature, UnitOfTime
+from homeassistant.const import (
+    EntityCategory,
+    UnitOfEnergy,
+    UnitOfTemperature,
+    UnitOfTime,
+    UnitOfVolumeFlowRate,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
@@ -23,6 +29,7 @@ from .registers import (
     FAULT_CODES,
     LOCK_CODES,
     OPERATING_MODES,
+    RAW_ADDRESSES,
     REGISTERS_BY_KEY,
     SENSOR_FAULT_CODES,
     STATUS_CODES,
@@ -108,6 +115,22 @@ REGISTER_SENSORS: tuple[WpmSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    WpmSensorDescription(
+        key="flow_rate",
+        device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
+        native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_HOUR,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+    ),
+    # Unidentified registers, recorded so their history can be compared with the display.
+    *(
+        WpmSensorDescription(
+            key=f"raw_{address}",
+            state_class=SensorStateClass.MEASUREMENT,
+            entity_category=EntityCategory.DIAGNOSTIC,
+        )
+        for address in RAW_ADDRESSES
     ),
     # Settings that only become sensors when the options do not make them writable
     # (for the others above, the number entity shows the value instead).

@@ -133,6 +133,9 @@ def _runtime(
     return Register(key, address, Group.COUNTERS, description, optional=optional, verified=verified)
 
 
+# Unidentified registers that change while the heat pump runs (scans 13.10.2026).
+RAW_ADDRESSES: tuple[int, ...] = (31, 43, 95, 98, 99, 100, 102, 321)
+
 REGISTERS: tuple[Register, ...] = (
     # Operating data (0.1 °C)
     _temperature("outdoor_temperature", 1, "Außentemperatur (R1)", verified=True),
@@ -182,6 +185,28 @@ REGISTERS: tuple[Register, ...] = (
         scale=0.1,
         optional=True,
         verified=True,
+    ),
+    Register(
+        "flow_rate",
+        131,
+        Group.STATUS,
+        "Volumenstrom in l/h, am Display „Volumenstrom“ (nicht in der Dimplex-Liste)",
+        valid_max=20000,
+        optional=True,
+        verified=True,  # 1656 = display 1656 l/h while heating, 0 at standstill
+    ),
+    # Not in the Dimplex list and not yet identified: they change between standstill and
+    # heating. Read as raw values to compare their history with the display.
+    *(
+        Register(
+            f"raw_{address}",
+            address,
+            Group.STATUS,
+            f"Unbekannt, Register {address} (Rohwert, nicht in der Dimplex-Liste)",
+            DataType.INT16,
+            optional=True,
+        )
+        for address in RAW_ADDRESSES
     ),
     # System status (codes, see tables below)
     Register("status", 103, Group.STATUS, "Statusmeldungen"),
@@ -320,7 +345,7 @@ REGISTERS: tuple[Register, ...] = (
         "hot_water_setpoint_min",
         352,
         Group.SETTINGS,
-        "Warmwasser Solltemperatur Minimal",
+        "Warmwasser Sperre Minimale Temperatur (am Display, nicht das Soll-Minimum)",
         valid_min=10,
         valid_max=85,
         optional=True,

@@ -43,6 +43,8 @@ the **current** Weishaupt generation (WBB, WWP LS) and do not fit these units.
 | Status, lock, fault, sensor fault | Text, attribute `code` with the raw value |
 | Fault active, lock active | Problem sensors for notifications |
 | Active operating mode | Summer, winter, holiday, party, 2nd heat generator, cooling |
+| Heat pump flow rate | l/h (register 131, not in the Dimplex list, checked against the display) |
+| Register 31, 43, 95, 98–100, 102, 321 (unknown) | Diagnostic raw values that change while the heat pump runs, to identify them from their history |
 | Runtimes | Compressor, pumps, 2nd heat generator, flange heater (h) |
 | Heat amounts | Heating, hot water, environmental energy (kWh), each from three registers |
 | **Operating mode** (select) | modes chosen in the options; default summer, winter, holiday, party |

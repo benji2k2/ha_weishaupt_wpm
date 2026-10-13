@@ -109,7 +109,7 @@
         "hot_water_setpoint": "Hot water setpoint",
         "hot_water_hysteresis": "Hot water hysteresis",
         "hot_water_setpoint_max": "Hot water maximum temperature",
-        "hot_water_setpoint_min": "Hot water minimum temperature",
+        "hot_water_setpoint_min": "Hot water lock minimum temperature",
         "heating_hysteresis": "Heating circuit hysteresis",
         "heating_curve_end_point": "Heating curve end point",
         "heating_curve_fixed_setpoint": "Fixed setpoint",
@@ -157,7 +157,7 @@
         "name": "Hot water setpoint maximum"
       },
       "hot_water_setpoint_min": {
-        "name": "Hot water setpoint minimum"
+        "name": "Hot water lock minimum temperature"
       },
       "party_hours": {
         "name": "Party hours"
@@ -221,6 +221,9 @@
           }
         }
       },
+      "flow_rate": {
+        "name": "Heat pump flow rate"
+      },
       "flow_temperature": {
         "name": "Heat pump flow"
       },
@@ -264,7 +267,7 @@
         "name": "Hot water setpoint maximum"
       },
       "hot_water_setpoint_min": {
-        "name": "Hot water setpoint minimum"
+        "name": "Hot water lock minimum temperature"
       },
       "hot_water_temperature": {
         "name": "Hot water temperature"
@@ -335,6 +338,30 @@
       },
       "pressure_8": {
         "name": "Heat pump high pressure"
+      },
+      "raw_100": {
+        "name": "Register 100 (unknown)"
+      },
+      "raw_102": {
+        "name": "Register 102 (unknown)"
+      },
+      "raw_31": {
+        "name": "Register 31 (unknown)"
+      },
+      "raw_321": {
+        "name": "Register 321 (unknown)"
+      },
+      "raw_43": {
+        "name": "Register 43 (unknown)"
+      },
+      "raw_95": {
+        "name": "Register 95 (unknown)"
+      },
+      "raw_98": {
+        "name": "Register 98 (unknown)"
+      },
+      "raw_99": {
+        "name": "Register 99 (unknown)"
       },
       "return_setpoint": {
         "name": "Heating circuit 1 return setpoint"

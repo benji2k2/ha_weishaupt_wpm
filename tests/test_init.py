@@ -38,6 +38,8 @@ async def test_entities_show_the_simulated_values(
     assert state(hass, "sensor.weishaupt_wpm_runtime_compressor_1") == "18342"
     assert state(hass, "sensor.weishaupt_wpm_heat_for_heating") == "49998"
     assert state(hass, "binary_sensor.weishaupt_wpm_fault_active") == "off"
+    assert state(hass, "sensor.weishaupt_wpm_heat_pump_flow_rate") == "1656"
+    assert state(hass, "sensor.weishaupt_wpm_register_95_unknown") == "-16"
     assert state(hass, "select.weishaupt_wpm_operating_mode") == "winter"
     assert state(hass, "number.weishaupt_wpm_hot_water_setpoint") == "50"
 
@@ -53,9 +55,9 @@ async def test_one_device_with_all_entities(
     assert (DOMAIN, setup_entry.unique_id) in device.identifiers
     assert device.manufacturer == "Weishaupt"
     entities = er.async_entries_for_device(er.async_get(hass), device.id, True)
-    # 35 sensors (30 registers, 3 heat amounts, write count, clock deviation),
+    # 44 sensors (39 registers, 3 heat amounts, write count, clock deviation),
     # 2 binary sensors, 5 numbers, 1 select, 1 button.
-    assert len(entities) == 44
+    assert len(entities) == 53
 
 
 async def test_missing_registers_are_left_out(
@@ -71,8 +73,9 @@ async def test_missing_registers_are_left_out(
     assert coordinator.data.raw[7] == 0x10000 - 71
     requests = simulator.requests
     await coordinator.async_refresh()
-    # Status tier only, and no more probing of the missing register: 1-3, 5, 7-8, 53, 58, 101..
-    assert simulator.requests - requests == 7
+    # Status tier only, and no more probing of the missing register:
+    # 1-3, 5, 7-8, 31, 43, 53, 58, 95, 98-106, 131, 321.
+    assert simulator.requests - requests == 11
 
 
 async def test_tiers_are_read_at_their_own_pace(

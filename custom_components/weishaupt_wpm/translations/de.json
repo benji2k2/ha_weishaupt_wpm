@@ -109,7 +109,7 @@
         "hot_water_setpoint": "Warmwasser-Solltemperatur",
         "hot_water_hysteresis": "Warmwasser-Hysterese",
         "hot_water_setpoint_max": "Warmwasser-Maximaltemperatur",
-        "hot_water_setpoint_min": "Warmwasser-Minimaltemperatur",
+        "hot_water_setpoint_min": "Warmwasser Sperre minimale Temperatur",
         "heating_hysteresis": "Hysterese Heizkreis",
         "heating_curve_end_point": "Heizkurvenendpunkt",
         "heating_curve_fixed_setpoint": "Festwertsolltemperatur",
@@ -157,7 +157,7 @@
         "name": "Warmwasser-Solltemperatur maximal"
       },
       "hot_water_setpoint_min": {
-        "name": "Warmwasser-Solltemperatur minimal"
+        "name": "Warmwasser Sperre minimale Temperatur"
       },
       "party_hours": {
         "name": "Partystunden"
@@ -221,6 +221,9 @@
           }
         }
       },
+      "flow_rate": {
+        "name": "Wärmepumpe Volumenstrom"
+      },
       "flow_temperature": {
         "name": "Wärmepumpe Vorlauf"
       },
@@ -264,7 +267,7 @@
         "name": "Warmwasser-Solltemperatur maximal"
       },
       "hot_water_setpoint_min": {
-        "name": "Warmwasser-Solltemperatur minimal"
+        "name": "Warmwasser Sperre minimale Temperatur"
       },
       "hot_water_temperature": {
         "name": "Warmwassertemperatur"
@@ -335,6 +338,30 @@
       },
       "pressure_8": {
         "name": "Wärmepumpe Hochdruck"
+      },
+      "raw_100": {
+        "name": "Register 100 (unbekannt)"
+      },
+      "raw_102": {
+        "name": "Register 102 (unbekannt)"
+      },
+      "raw_31": {
+        "name": "Register 31 (unbekannt)"
+      },
+      "raw_321": {
+        "name": "Register 321 (unbekannt)"
+      },
+      "raw_43": {
+        "name": "Register 43 (unbekannt)"
+      },
+      "raw_95": {
+        "name": "Register 95 (unbekannt)"
+      },
+      "raw_98": {
+        "name": "Register 98 (unbekannt)"
+      },
+      "raw_99": {
+        "name": "Register 99 (unbekannt)"
       },
       "return_setpoint": {
         "name": "Heizkreis 1 Rücklauf Soll"

@@ -16,10 +16,10 @@
 
 ---
 
-> **Status: pre-release.** The register list comes from the Dimplex
-> documentation (WPM software J/L/M) and has **not been checked against a real
-> unit yet**. Until then, compare every value with the WPM display (see
-> [Checking with tools/probe.py](#checking-with-toolsprobepy)).
+> **Status: in daily use since October 2026** on one Weishaupt heat pump with WPM software L23
+> (Modbus RTU via a serial gateway). The main values – temperatures, operating mode, heating curve
+> step, controller clock – are checked against the WPM display. Other software versions are untested:
+> compare the values with your display once (see [Checking with tools/probe.py](#checking-with-toolsprobepy)).
 
 > [!WARNING]
 > **Disclaimer.** This is an unofficial community project, not affiliated with Weishaupt or Dimplex.

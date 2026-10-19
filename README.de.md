@@ -16,10 +16,10 @@
 
 ---
 
-> **Stand: Vorabversion.** Die Registerliste stammt aus der Dimplex-Dokumentation
-> (WPM-Software J/L/M). Sie ist noch **nicht an einer echten Anlage geprüft**.
-> Bis dahin ist jeder Wert mit dem Display am WPM abzugleichen (siehe
-> [Prüfen mit tools/probe.py](#prüfen-mit-toolsprobepy)).
+> **Stand: seit Oktober 2026 im Dauerbetrieb** an einer Weishaupt-Wärmepumpe mit WPM-Software L23
+> (Modbus RTU über einen Seriell-Gateway). Die wichtigsten Werte – Temperaturen, Betriebsart,
+> Heizkurven-Stufe, Regler-Uhr – sind mit dem Display am WPM abgeglichen. Andere Software-Stände sind
+> ungetestet: Werte einmal mit dem eigenen Display vergleichen (siehe [Prüfen mit tools/probe.py](#prüfen-mit-toolsprobepy)).
 
 > [!WARNING]
 > **Haftungsausschluss.** Dies ist ein inoffizielles Community-Projekt ohne Verbindung zu Weishaupt oder

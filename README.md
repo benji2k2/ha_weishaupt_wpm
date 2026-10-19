@@ -21,6 +21,14 @@
 > unit yet**. Until then, compare every value with the WPM display (see
 > [Checking with tools/probe.py](#checking-with-toolsprobepy)).
 
+> [!WARNING]
+> **Disclaimer.** This is an unofficial community project, not affiliated with Weishaupt or Dimplex.
+> Writing to the heat pump controller (only possible for values you explicitly enable, see below) can
+> change how your heating works and, with wrong values, cause discomfort, higher energy use or damage.
+> The software is provided "as is", without warranty of any kind (see [LICENSE](LICENSE)); the author
+> accepts **no liability** for damage to the heat pump, the building or other property, or for loss of
+> warranty. You use it at your own risk.
+
 ## Why
 
 Older Weishaupt air/water heat pumps (e.g. WWP L … AD(R)) have a **WPM 5.0M**

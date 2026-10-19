@@ -21,6 +21,14 @@
 > Bis dahin ist jeder Wert mit dem Display am WPM abzugleichen (siehe
 > [Prüfen mit tools/probe.py](#prüfen-mit-toolsprobepy)).
 
+> [!WARNING]
+> **Haftungsausschluss.** Dies ist ein inoffizielles Community-Projekt ohne Verbindung zu Weishaupt oder
+> Dimplex. Schreibzugriffe auf den Wärmepumpenregler (nur für ausdrücklich freigegebene Werte, siehe unten)
+> verändern den Heizbetrieb und können mit falschen Werten zu Komforteinbußen, höherem Verbrauch oder
+> Schäden führen. Die Software wird ohne jede Gewährleistung bereitgestellt (siehe [LICENSE](LICENSE)); der
+> Autor übernimmt **keine Haftung** für Schäden an Wärmepumpe, Gebäude oder sonstigem Eigentum oder für den
+> Verlust von Garantieansprüchen. Die Nutzung erfolgt auf eigene Gefahr.
+
 ## Warum
 
 Ältere Weishaupt-Luft/Wasser-Wärmepumpen (z. B. WWP L … AD(R)) haben einen

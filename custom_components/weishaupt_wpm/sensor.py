@@ -123,6 +123,26 @@ REGISTER_SENSORS: tuple[WpmSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
     ),
+    # Refrigerant circuit, next to the pressures (optional registers, but shown by default).
+    *(
+        WpmSensorDescription(
+            key=key,
+            device_class=SensorDeviceClass.TEMPERATURE,
+            native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+            state_class=SensorStateClass.MEASUREMENT,
+            suggested_display_precision=1,
+            entity_category=EntityCategory.DIAGNOSTIC,
+        )
+        for key in ("suction_gas_temperature", "evaporation_temperature")
+    ),
+    # A temperature difference: no temperature device class (it would convert K as absolute).
+    WpmSensorDescription(
+        key="superheat",
+        native_unit_of_measurement=UnitOfTemperature.KELVIN,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
     # Unidentified registers, recorded so their history can be compared with the display.
     *(
         WpmSensorDescription(

@@ -6,9 +6,10 @@ from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
-from .const import CONF_TRANSPORT, CONF_UNIT, WRITABLE_CHOICES
+from .const import CONF_TRANSPORT, CONF_UNIT, DOMAIN, WRITABLE_CHOICES
 from .coordinator import WpmConfigEntry, WpmCoordinator
 from .modbus import ModbusClient
+from .registers import RETIRED_RAW_ADDRESSES
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,
@@ -35,6 +36,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: WpmConfigEntry) -> bool:
         raise
     entry.runtime_data = coordinator
     _remove_entities_of_the_other_kind(hass, entry, coordinator)
+    _remove_retired_raw_entities(hass, coordinator)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
@@ -52,6 +54,15 @@ async def async_unload_entry(hass: HomeAssistant, entry: WpmConfigEntry) -> bool
     if unloaded:
         await entry.runtime_data.client.close()
     return unloaded
+
+
+def _remove_retired_raw_entities(hass: HomeAssistant, coordinator: WpmCoordinator) -> None:
+    """Drop the raw value sensors of registers that have been identified since."""
+    registry = er.async_get(hass)
+    for address in RETIRED_RAW_ADDRESSES:
+        unique_id = f"{coordinator.device_identifier}_raw_{address}"
+        if entity_id := registry.async_get_entity_id(Platform.SENSOR, DOMAIN, unique_id):
+            registry.async_remove(entity_id)
 
 
 def _remove_entities_of_the_other_kind(

@@ -186,6 +186,9 @@
       "environmental_energy": {
         "name": "Environmental energy"
       },
+      "evaporation_temperature": {
+        "name": "Heat pump evaporation"
+      },
       "fault": {
         "name": "Fault",
         "state": {
@@ -339,9 +342,6 @@
       "pressure_8": {
         "name": "Heat pump high pressure"
       },
-      "raw_100": {
-        "name": "Register 100 (unknown)"
-      },
       "raw_102": {
         "name": "Register 102 (unknown)"
       },
@@ -351,17 +351,8 @@
       "raw_321": {
         "name": "Register 321 (unknown)"
       },
-      "raw_43": {
-        "name": "Register 43 (unknown)"
-      },
       "raw_95": {
         "name": "Register 95 (unknown)"
-      },
-      "raw_98": {
-        "name": "Register 98 (unknown)"
-      },
-      "raw_99": {
-        "name": "Register 99 (unknown)"
       },
       "return_setpoint": {
         "name": "Heating circuit 1 return setpoint"
@@ -467,6 +458,12 @@
             "name": "Code"
           }
         }
+      },
+      "suction_gas_temperature": {
+        "name": "Heat pump suction gas"
+      },
+      "superheat": {
+        "name": "Heat pump superheat"
       },
       "write_count": {
         "name": "Writes to the controller"

@@ -186,6 +186,9 @@
       "environmental_energy": {
         "name": "Umweltenergie"
       },
+      "evaporation_temperature": {
+        "name": "Wärmepumpe Verdampfung"
+      },
       "fault": {
         "name": "Störung",
         "state": {
@@ -339,9 +342,6 @@
       "pressure_8": {
         "name": "Wärmepumpe Hochdruck"
       },
-      "raw_100": {
-        "name": "Register 100 (unbekannt)"
-      },
       "raw_102": {
         "name": "Register 102 (unbekannt)"
       },
@@ -351,17 +351,8 @@
       "raw_321": {
         "name": "Register 321 (unbekannt)"
       },
-      "raw_43": {
-        "name": "Register 43 (unbekannt)"
-      },
       "raw_95": {
         "name": "Register 95 (unbekannt)"
-      },
-      "raw_98": {
-        "name": "Register 98 (unbekannt)"
-      },
-      "raw_99": {
-        "name": "Register 99 (unbekannt)"
       },
       "return_setpoint": {
         "name": "Heizkreis 1 Rücklauf Soll"
@@ -467,6 +458,12 @@
             "name": "Code"
           }
         }
+      },
+      "suction_gas_temperature": {
+        "name": "Wärmepumpe Sauggas"
+      },
+      "superheat": {
+        "name": "Wärmepumpe Überhitzung"
       },
       "write_count": {
         "name": "Schreibzugriffe auf den Regler"

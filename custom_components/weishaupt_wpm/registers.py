@@ -134,7 +134,13 @@ def _runtime(
 
 
 # Unidentified registers that change while the heat pump runs (scans 13.10.2026).
-RAW_ADDRESSES: tuple[int, ...] = (31, 43, 95, 98, 99, 100, 102, 321)
+# Likely: 31 fan (0 at standstill and while defrosting), 102 expansion valve (327 at
+# standstill, 999 while defrosting). 95 counts down by 1/min while running. 321 is the
+# status (codes like 103), but 3870/2334 during a lock.
+RAW_ADDRESSES: tuple[int, ...] = (31, 95, 102, 321)
+# Former raw values, identified from their history 21.-31.10.2026: 43 is the status in
+# the codes of software H/J (same as 103), 98-100 have their own sensors now.
+RETIRED_RAW_ADDRESSES: tuple[int, ...] = (43, 98, 99, 100)
 
 REGISTERS: tuple[Register, ...] = (
     # Operating data (0.1 °C)
@@ -194,6 +200,33 @@ REGISTERS: tuple[Register, ...] = (
         valid_max=20000,
         optional=True,
         verified=True,  # 1656 = display 1656 l/h while heating, 0 at standstill
+    ),
+    # Refrigerant circuit, not in the Dimplex list. Identified from 10 days of history
+    # (21.-31.10.2026), not at the display: 99 equals the R410A saturation temperature
+    # of the low pressure (register 101 + 1 bar) within 0.3 K, and 100 = 98 - 99 at
+    # every sample.
+    _temperature(
+        "suction_gas_temperature",
+        98,
+        "Sauggastemperatur (nicht in der Dimplex-Liste)",
+        optional=True,
+    ),
+    _temperature(
+        "evaporation_temperature",
+        99,
+        "Verdampfungstemperatur (nicht in der Dimplex-Liste)",
+        optional=True,
+    ),
+    Register(
+        "superheat",
+        100,
+        Group.STATUS,
+        "Überhitzung in K, Sauggas minus Verdampfung (nicht in der Dimplex-Liste)",
+        DataType.INT16,
+        0.1,
+        valid_min=-50.0,
+        valid_max=100.0,
+        optional=True,
     ),
     # Not in the Dimplex list and not yet identified: they change between standstill and
     # heating. Read as raw values to compare their history with the display.

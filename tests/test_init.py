@@ -40,6 +40,9 @@ async def test_entities_show_the_simulated_values(
     assert state(hass, "binary_sensor.weishaupt_wpm_fault_active") == "off"
     assert state(hass, "sensor.weishaupt_wpm_heat_pump_flow_rate") == "1656"
     assert state(hass, "sensor.weishaupt_wpm_register_95_unknown") == "-16"
+    assert state(hass, "sensor.weishaupt_wpm_heat_pump_suction_gas") == "8.2"
+    assert state(hass, "sensor.weishaupt_wpm_heat_pump_evaporation") == "-0.4"
+    assert state(hass, "sensor.weishaupt_wpm_heat_pump_superheat") == "8.6"
     assert state(hass, "select.weishaupt_wpm_operating_mode") == "winter"
     assert state(hass, "number.weishaupt_wpm_hot_water_setpoint") == "50"
 
@@ -55,9 +58,30 @@ async def test_one_device_with_all_entities(
     assert (DOMAIN, setup_entry.unique_id) in device.identifiers
     assert device.manufacturer == "Weishaupt"
     entities = er.async_entries_for_device(er.async_get(hass), device.id, True)
-    # 44 sensors (39 registers, 3 heat amounts, write count, clock deviation),
+    # 43 sensors (38 registers, 3 heat amounts, write count, clock deviation),
     # 2 binary sensors, 5 numbers, 1 select, 1 button.
-    assert len(entities) == 53
+    assert len(entities) == 52
+
+
+async def test_retired_raw_values_are_removed(hass: HomeAssistant, simulator: WpmSimulator) -> None:
+    entry = entry_for(simulator)
+    entry.add_to_hass(hass)
+    registry = er.async_get(hass)
+    for address in (43, 98, 31):
+        registry.async_get_or_create(
+            "sensor", DOMAIN, f"{entry.unique_id}_raw_{address}", config_entry=entry
+        )
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    left = {
+        e.unique_id.rsplit("_", 2)[-1]
+        for e in er.async_entries_for_config_entry(registry, entry.entry_id)
+        if "_raw_" in e.unique_id
+    }
+    # Identified registers are gone; the still unknown ones stay.
+    assert left == {"31", "95", "102", "321"}
+    await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
 
 
 async def test_missing_registers_are_left_out(
@@ -74,8 +98,8 @@ async def test_missing_registers_are_left_out(
     requests = simulator.requests
     await coordinator.async_refresh()
     # Status tier only, and no more probing of the missing register:
-    # 1-3, 5, 7-8, 31, 43, 53, 58, 95, 98-106, 131, 321.
-    assert simulator.requests - requests == 11
+    # 1-3, 5, 7-8, 31, 53, 58, 95, 98-106, 131, 321.
+    assert simulator.requests - requests == 10
 
 
 async def test_tiers_are_read_at_their_own_pace(

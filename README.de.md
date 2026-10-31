@@ -54,7 +54,8 @@ Anlagen.
 | Störung aktiv, Sperre aktiv | Problem-Sensoren für Benachrichtigungen |
 | Betriebsmodus aktiv | Sommer, Winter, Urlaub, Party, 2. Wärmeerzeuger, Kühlen |
 | Wärmepumpe Volumenstrom | l/h (Register 131, nicht in der Dimplex-Liste, am Display geprüft) |
-| Register 31, 43, 95, 98–100, 102, 321 (unbekannt) | Diagnose-Rohwerte, die sich im Betrieb ändern – zum Zuordnen über ihren Verlauf |
+| Wärmepumpe Sauggas, Verdampfung, Überhitzung | Diagnose, Kältekreis (Register 98–100, nicht in der Dimplex-Liste; über den Verlauf zugeordnet: Verdampfung = R410A-Sättigungstemperatur zum Niederdruck, Überhitzung = Sauggas − Verdampfung) |
+| Register 31, 95, 102, 321 (unbekannt) | Diagnose-Rohwerte, die sich im Betrieb ändern – zum Zuordnen über ihren Verlauf |
 | Laufzeiten | Verdichter, Pumpen, 2. Wärmeerzeuger, Flanschheizung (h) |
 | Wärmemengen | Heizen, Warmwasser, Umweltenergie (kWh), aus je drei Registern |
 | **Betriebsmodus** (Auswahl) | welche Modi, legst du in den Optionen fest; Vorgabe Sommer, Winter, Urlaub, Party |

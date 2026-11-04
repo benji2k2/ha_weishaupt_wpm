@@ -137,9 +137,12 @@ connection open; never run `tools/probe.py` and the integration at the same time
 
 ### HACS
 
-1. HACS → ⋮ → **Custom repositories**
-2. Repository `https://github.com/benji2k2/ha_weishaupt_wpm`, type **Integration**
-3. Download **Weishaupt WPM** and restart Home Assistant
+1. HACS → search for **Weishaupt WPM** → **Download**.
+2. Restart Home Assistant.
+
+If it doesn't show up in the HACS search yet (the index takes a while to pick up newly listed
+integrations), add it as a custom repository instead: HACS → ⋮ → **Custom repositories** →
+`https://github.com/benji2k2/ha_weishaupt_wpm`, type **Integration**, then continue with step 1.
 
 ### Manually
 

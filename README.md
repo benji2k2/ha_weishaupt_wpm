@@ -135,18 +135,25 @@ connection open; never run `tools/probe.py` and the integration at the same time
 
 ## Installation
 
-### HACS
+Requires Home Assistant **2025.3** or newer.
+
+### Marketplace (Home Assistant 2026.11 and newer)
+
+1. **Settings → Marketplace** → search for **Weishaupt WPM** → **Install**.
+2. Restart Home Assistant if the Marketplace asks for it.
+
+### HACS (2025.3 to 2026.10)
 
 1. HACS → search for **Weishaupt WPM** → **Download**.
 2. Restart Home Assistant.
 
-If it doesn't show up in the HACS search yet (the index takes a while to pick up newly listed
-integrations), add it as a custom repository instead: HACS → ⋮ → **Custom repositories** →
-`https://github.com/benji2k2/ha_weishaupt_wpm`, type **Integration**, then continue with step 1.
+Not found? Add the repository by hand and continue with step 1: in the Marketplace with
+**Add from link**, in HACS under ⋮ → **Custom repositories** (type **Integration**), each with
+`https://github.com/benji2k2/ha_weishaupt_wpm`.
 
 ### Manually
 
-Copy `custom_components/weishaupt_wpm` to `/config/custom_components/` and
+Copy `custom_components/weishaupt_wpm` into `/config/custom_components/` and
 restart Home Assistant.
 
 ## Setup

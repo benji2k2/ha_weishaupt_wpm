@@ -148,9 +148,8 @@ def check_response_pdu(request: bytes, response: bytes) -> bytes:
         count = struct.unpack(">H", request[3:5])[0]
         if len(response) != 2 + 2 * count or response[1] != 2 * count:
             raise ModbusFrameError("wrong length in read response")
-    elif function in (WRITE_SINGLE_REGISTER, WRITE_SINGLE_COIL):
-        if response != request:
-            raise ModbusFrameError("write response does not echo the request")
+    elif function in (WRITE_SINGLE_REGISTER, WRITE_SINGLE_COIL) and response != request:
+        raise ModbusFrameError("write response does not echo the request")
     return response
 
 
